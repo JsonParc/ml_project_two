@@ -5,3 +5,4 @@
 __pycache__/
 *.pyc
 .venv/
+/script_artifact.html
