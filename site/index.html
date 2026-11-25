@@ -8,14 +8,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=JetBrains+Mono:wght@500;700&family=Caveat:wght@700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-/* 1920x1080 고정 무대를 화면에 맞춰 확대·축소 (DMN 발표와 같은 틀).
-   종이색 바탕 + 먹색 글자 + 형광펜 노랑(지금 말하는 부분).
-   Encoder(이미지 쪽) = 청록, Decoder(글자 쪽) = 주황. */
+/* 1920x1080 고정 무대를 화면에 맞춰 확대·축소 (초파리 발표 ML_project와 같은 틀).
+   종이색 바탕 + 먹색 글자 + 형광펜 노랑(현재 단계 표시). 인코더 = 청록, 디코더 = 주황.
+   → 키를 누를 때마다 슬라이드 안의 단계([data-at])가 하나씩 켜지고, 마지막 단계 다음에 다음 슬라이드로 넘어간다. */
 :root {
-  --paper: #FAFAFA; --ink: #2B2D31; --sub: #54575D; --mid: #74777D; --faint: #BDBFC4;
-  --line: #E1E3E6; --tint: #F0F1F3; --hl: #FFC421; --hlbg: #FFC421; --pale: #FFF2C7;
+  --paper: #FAFAFA; --ink: #2E2E2E; --sub: #555; --mid: #737373; --faint: #BDBDBD;
+  --line: #E2E2E2; --tint: #F0F0F0; --hl: #FFC421; --hlbg: #FFC421; --pale: #FFF2C7;
   --enc: #1B6F8F; --enc-soft: #DCEDF3; --dec: #D9480F; --dec-soft: #FBE3D6;
-  --bad: #B3123B; --bad-soft: #F8D9E1; --ok: #0E5F35; --ok-soft: #D6EEDF;
+  --bad: #B3123B; --bad-soft: #F8D9E1; --ok: #0E5F35;
   --stage: #161616;
   --font: "Pretendard Variable", Pretendard, "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
   --mono: "JetBrains Mono", "D2Coding", Consolas, monospace;
@@ -23,17 +23,17 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #1A1B1E; --ink: #ECECEC; --sub: #C4C5C8; --mid: #9A9CA0; --faint: #5A5C60;
+    --paper: #1A1B1E; --ink: #ECECEC; --sub: #C2C2C2; --mid: #9A9A9A; --faint: #5A5A5A;
     --line: #34363A; --tint: #26282C; --hlbg: rgba(255,196,33,.38); --pale: rgba(255,196,33,.14);
     --enc: #4FB3D9; --enc-soft: #17323D; --dec: #FF7A3D; --dec-soft: #3B2218;
-    --bad: #FF6B81; --bad-soft: #4A1D27; --ok: #5CC58A; --ok-soft: #173826; --stage: #0B0B0C; color-scheme: dark;
+    --bad: #FF6B81; --bad-soft: #4A1D27; --ok: #5CC58A; --stage: #0B0B0C; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --paper: #1A1B1E; --ink: #ECECEC; --sub: #C4C5C8; --mid: #9A9CA0; --faint: #5A5C60;
+  --paper: #1A1B1E; --ink: #ECECEC; --sub: #C2C2C2; --mid: #9A9A9A; --faint: #5A5A5A;
   --line: #34363A; --tint: #26282C; --hlbg: rgba(255,196,33,.38); --pale: rgba(255,196,33,.14);
   --enc: #4FB3D9; --enc-soft: #17323D; --dec: #FF7A3D; --dec-soft: #3B2218;
-  --bad: #FF6B81; --bad-soft: #4A1D27; --ok: #5CC58A; --ok-soft: #173826; --stage: #0B0B0C; color-scheme: dark;
+  --bad: #FF6B81; --bad-soft: #4A1D27; --ok: #5CC58A; --stage: #0B0B0C; color-scheme: dark;
 }
 
 * { box-sizing: border-box; margin: 0; }
@@ -44,40 +44,38 @@ body { background: var(--stage); overflow: hidden; font: 500 32px/1.45 var(--fon
 /* ---------------------------------------------------------------- 슬라이드 틀 */
 .slide { position: absolute; inset: 0; padding: 150px 120px 112px; display: none; flex-direction: column; gap: 40px; }
 .slide.active { display: flex; }
-h1 { font-size: 76px; line-height: 1.2; font-weight: 800; letter-spacing: -0.03em; text-wrap: balance; }
-h2 { font-size: 60px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; text-wrap: balance; }
+h1 { font-size: 72px; line-height: 1.22; font-weight: 800; letter-spacing: -0.025em; }
+h2 { font-size: 60px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; }
 h3 { font-size: 32px; line-height: 1.3; font-weight: 800; margin-bottom: 8px; }
 b, strong { font-weight: 800; }
 p, li { font-size: 30px; }
-.sm, .sm li, .sm p { font-size: 25px; line-height: 1.55; }
+.sm, .sm li { font-size: 25px; line-height: 1.55; }
 .xs { font-size: 21px; line-height: 1.5; }
 .muted { color: var(--mid); }
 .mono { font-family: var(--mono); }
-.enc-t { color: var(--enc); font-weight: 800; } .dec-t { color: var(--dec); font-weight: 800; } .bad-t { color: var(--bad); font-weight: 800; } .ok-t { color: var(--ok); font-weight: 800; }
+.enc-t { color: var(--enc); font-weight: 800; } .dec-t { color: var(--dec); font-weight: 800; }
 .foot { position: absolute; left: 120px; right: 360px; bottom: 56px; font-size: 20px; color: var(--mid); }
-.split { display: grid; grid-template-columns: var(--l, 1fr) var(--r, 1fr); gap: 64px; flex: 1; min-height: 0; align-items: start; }
+.split { display: grid; grid-template-columns: var(--l, 1fr) var(--r, 1fr); gap: 72px; flex: 1; min-height: 0; align-items: start; }
 .split > * { min-width: 0; }
 .stack { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
 .row { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
 .panel { background: var(--tint); border-radius: 20px; padding: 28px 34px; }
 .panel h3 { font-size: 28px; }
-.tag { display: inline-block; font-size: 21px; font-weight: 800; color: var(--mid); letter-spacing: .02em; margin-bottom: 10px; }
-.lede { font-size: 30px; color: var(--sub); max-width: 1500px; }
-.ask { border-left: 8px solid var(--hl); padding: 6px 0 6px 28px; }
-.ask p { font-size: 32px; font-weight: 700; }
-.badge { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; font-size: 19px; font-weight: 800; padding: 6px 14px; border-radius: 999px; background: var(--tint); color: var(--sub); white-space: nowrap; }
+.tag { display: inline-block; font-size: 21px; font-weight: 800; color: var(--mid); margin-bottom: 10px; }
+.lede { font-size: 30px; color: var(--sub); max-width: 1560px; }
+.ask { border-left: 8px solid var(--hl); padding-left: 24px; }
+.ask p { font-size: 30px; font-weight: 700; line-height: 1.4; }
+.badge { align-self: flex-start; display: inline-flex; align-items: center; font-size: 19px; font-weight: 800; padding: 6px 14px; border-radius: 999px; background: var(--tint); color: var(--sub); white-space: nowrap; }
 .badge.warn { background: var(--bad-soft); color: var(--bad); }
 .badge.concept { background: var(--pale); color: var(--ink); }
 .hl-mark, [data-hl].hl { box-shadow: inset 0 -0.42em 0 var(--hlbg); transition: box-shadow .35s; }
-tr[data-hl].hl { box-shadow: none; }
-tr[data-hl].hl td { background: var(--pale); }
-tr[data-hl] td { transition: background .35s; }
+.cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; }
 
 /* 표 */
 .t { border-collapse: collapse; width: 100%; font-size: 25px; }
-.t th, .t td { text-align: left; padding: 14px 18px; border-bottom: 2px solid var(--line); vertical-align: top; }
+.t th, .t td { text-align: left; padding: 13px 18px; border-bottom: 2px solid var(--line); vertical-align: top; }
 .t th { font-size: 21px; color: var(--mid); font-weight: 800; }
-.t td.num, .t th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.t td.num, .t th.num { text-align: right; }
 .t tr.me td { background: var(--pale); font-weight: 800; }
 
 /* 토큰 칩 */
@@ -92,13 +90,12 @@ tr[data-hl] td { transition: background .35s; }
 .top .parts li { counter-increment: p; font-size: 22px; transition: color .3s; }
 .top .parts li::before { content: counter(p) "  "; white-space: pre; }
 #deck[data-part="1"] .parts li:nth-child(1), #deck[data-part="2"] .parts li:nth-child(2), #deck[data-part="3"] .parts li:nth-child(3),
-#deck[data-part="4"] .parts li:nth-child(4), #deck[data-part="5"] .parts li:nth-child(5), #deck[data-part="6"] .parts li:nth-child(6),
-#deck[data-part="7"] .parts li:nth-child(7) { color: var(--ink); }
+#deck[data-part="4"] .parts li:nth-child(4), #deck[data-part="5"] .parts li:nth-child(5), #deck[data-part="6"] .parts li:nth-child(6) { color: var(--ink); }
 #deck[data-part=""] .parts { visibility: hidden; }
 .top .label { font-size: 22px; font-weight: 700; color: var(--ink); position: absolute; left: 0; }
+.bottom { position: absolute; right: 120px; bottom: 34px; display: flex; gap: 28px; align-items: center; z-index: 6; font-size: 20px; font-weight: 700; color: var(--faint); }
 .scriptref { color: var(--faint); text-decoration: none; }
 .scriptref:hover { color: var(--ink); }
-.bottom { position: absolute; right: 120px; bottom: 34px; display: flex; gap: 28px; align-items: center; z-index: 6; font-size: 20px; font-weight: 700; color: var(--faint); }
 .prog { position: absolute; left: 0; bottom: 0; height: 6px; width: 100%; z-index: 9; }
 .prog i { display: block; height: 100%; width: 0; background: var(--hl); transition: width .3s; }
 .nav { position: absolute; left: 120px; bottom: 22px; display: flex; gap: 10px; z-index: 9; opacity: 0; transition: opacity .2s; }
@@ -116,7 +113,7 @@ a { color: inherit; }
 [data-dim] { transition: opacity .4s; }
 [data-dim].dim { opacity: .28; }
 .draw { stroke-dasharray: 1 1; stroke-dashoffset: 1; }
-.slide.active .on .draw, .slide.active > .draw, .slide.active svg > .draw { animation: draw var(--dur, .9s) ease-out var(--delay, 0s) forwards; }
+.slide.active .on .draw, .slide.active svg > .draw { animation: draw var(--dur, .9s) ease-out var(--delay, 0s) forwards; }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @keyframes fadein { from { opacity: 0; } }
 .stackonly { display: grid; } .stackonly > * { grid-area: 1 / 1; }
@@ -130,7 +127,6 @@ svg text { font-family: var(--font); }
 .ct.ink { fill: var(--ink); }
 .ct.enc { fill: var(--enc); } .ct.dec { fill: var(--dec); }
 .grid { stroke: var(--line); stroke-width: 1.5; }
-.axis { stroke: var(--faint); stroke-width: 2; }
 .arrow { stroke: var(--mid); stroke-width: 3; fill: none; }
 .box { fill: var(--tint); stroke: var(--faint); stroke-width: 2; }
 .box.enc { fill: var(--enc-soft); stroke: var(--enc); stroke-width: 3; }
@@ -139,44 +135,52 @@ svg text { font-family: var(--font); }
 .layer { fill: var(--paper); stroke: none; }
 .ah { fill: var(--mid); }
 .packet { filter: drop-shadow(0 0 6px var(--hl)); }
-.bar-v { transform-box: fill-box; transform-origin: 50% 100%; }
 .bar-h { transform-box: fill-box; transform-origin: 0 50%; }
-.slide.active .on .bar-v, .slide.active .bar-v.go { animation: growv .9s cubic-bezier(.2,.8,.2,1) var(--d, 0s) both; }
 .slide.active .on .bar-h, .slide.active .bar-h.go { animation: growh .9s cubic-bezier(.2,.8,.2,1) var(--d, 0s) both; }
-@keyframes growv { from { transform: scaleY(0); } }
 @keyframes growh { from { transform: scaleX(0); } }
 
 /* ---------------------------------------------------------------- 1 표지 */
-.s-cover { flex-direction: row; align-items: center; gap: 60px; padding-top: 120px; }
-.s-cover .cover-text { flex: 0 0 860px; display: flex; flex-direction: column; gap: 30px; }
-.kicker { font-size: 26px; font-weight: 800; color: var(--mid); letter-spacing: .04em; }
-.subt { font-size: 36px; font-weight: 700; color: var(--sub); }
-.cite { font-size: 22px; color: var(--mid); line-height: 1.55; }
-.toc { display: flex; flex-wrap: wrap; gap: 10px 26px; padding: 0; list-style: none; counter-reset: c; margin-top: 10px; }
-.toc li { font-size: 23px; font-weight: 700; color: var(--sub); counter-increment: c; }
-.toc li::before { content: counter(c) " "; color: var(--faint); }
-.s-cover figure { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.s-cover { flex-direction: row; align-items: center; gap: 40px; padding-top: 120px; }
+.cover-text { flex: 0 0 960px; display: flex; flex-direction: column; gap: 30px; }
+.kicker { font-size: 28px; font-weight: 700; color: var(--mid); }
+.s-cover h1 { font-size: 66px; }
+.cite { font-size: 24px; color: var(--sub); max-width: 900px; line-height: 1.5; }
+.toc { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 14px 44px; counter-reset: t; margin-top: 12px; }
+.toc li { counter-increment: t; font-size: 26px; font-weight: 700; }
+.toc li::before { content: counter(t); display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 20px; margin-right: 14px; vertical-align: 2px; }
+.s-cover figure, .s-end figure { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
 figcaption { font-size: 20px; color: var(--mid); }
 
-/* 2 */
-.apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-.apps .panel p { font-size: 23px; color: var(--sub); }
-.apps .panel h3 { font-size: 27px; }
+/* 2 논문 요약 */
+.track { position: relative; margin-top: 10px; }
+.track-line { position: absolute; left: 0; top: 0; width: 100%; height: 40px; }
+.track-line path { stroke: var(--hl); stroke-width: 8; fill: none; stroke-linecap: round; }
+.stops { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; position: relative; }
+.stop i { display: block; width: 40px; height: 40px; border-radius: 50%; background: var(--paper); border: 8px solid var(--ink); margin-bottom: 22px; }
+.stop b { font-size: 34px; display: block; margin-bottom: 8px; }
+.stop p { font-size: 26px; color: var(--sub); line-height: 1.5; }
+.stop { opacity: 0; transform: translateY(14px); transition: opacity .45s, transform .45s; transition-delay: calc(var(--i) * .22s + .15s); }
+.track.on .stop { opacity: 1; transform: none; }
+.concepts { display: flex; gap: 40px; align-items: baseline; margin-top: 50px; }
+.concepts > span { font-size: 22px; font-weight: 700; color: var(--mid); white-space: nowrap; }
+.concepts ol { list-style: none; padding: 0; display: flex; gap: 40px; counter-reset: c; }
+.concepts li { counter-increment: c; font-size: 32px; font-weight: 800; box-shadow: inset 0 -0.42em 0 var(--hlbg); }
+.concepts li::before { content: counter(c) " "; color: var(--mid); font-size: 22px; }
 
-/* 3 */
-.paper-card { border: 2px solid var(--line); border-radius: 24px; padding: 40px 44px; display: flex; flex-direction: column; gap: 20px; }
-.paper-card .ttl { font-size: 36px; font-weight: 800; line-height: 1.3; }
-.links { display: flex; flex-direction: column; gap: 6px; }
-.links a { font-size: 22px; color: var(--enc); font-weight: 700; text-decoration: none; }
-.links a:hover { text-decoration: underline; }
-ol.contrib { padding-left: 1.2em; display: flex; flex-direction: column; gap: 10px; }
+/* 3 선택 이유 */
+.timeline { list-style: none; padding: 0; position: relative; display: grid; gap: 46px; counter-reset: s; }
+.timeline li { position: relative; padding-left: 92px; font-size: 31px; font-weight: 700; line-height: 1.4; counter-increment: s; }
+.timeline li::before { content: counter(s); position: absolute; left: 0; top: -4px; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--paper); font-size: 26px; }
+.timeline li:not(:last-child)::after { content: ""; position: absolute; left: 26px; top: 60px; width: 4px; height: calc(100% - 16px); background: var(--hl); transform-origin: top; transform: scaleY(0); transition: transform .6s .2s; }
+.timeline li.on::after { transform: scaleY(1); }
 
-/* 4 */
-.old-notes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
-.old-notes p { font-size: 24px; color: var(--sub); }
+/* 6 독창성 */
+.figs { display: grid; grid-template-columns: 1fr 1fr; gap: 56px 80px; margin-top: 10px; }
+.figs > div { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+.fig-n { font-size: 70px; font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+.fig-n small { font-size: 26px; font-weight: 700; color: var(--mid); margin-left: 8px; letter-spacing: 0; }
 
-/* 7 encoder / 8 decoder */
-.cvbox { position: relative; }
+/* 8, 9 인코더·디코더 */
 .cvbox canvas { display: block; }
 .steptext h3 { font-size: 34px; }
 .steptext p { font-size: 26px; color: var(--sub); line-height: 1.55; }
@@ -187,33 +191,58 @@ ol.contrib { padding-left: 1.2em; display: flex; flex-direction: column; gap: 10
 .probs { display: flex; flex-direction: column; gap: 18px; }
 .prob { display: grid; grid-template-columns: 170px 1fr 82px; gap: 14px; align-items: center; font-size: 24px; }
 .prob .tk { font: 700 25px var(--mono); white-space: pre; }
-.prob .track { height: 26px; background: var(--tint); border-radius: 6px; overflow: hidden; }
-.prob .track i { display: block; height: 100%; background: var(--faint); border-radius: 6px; transition: width .6s cubic-bezier(.2,.8,.2,1); }
-.prob.pick .track i { background: var(--dec); }
+.prob .track2 { height: 26px; background: var(--tint); border-radius: 6px; overflow: hidden; }
+.prob .track2 i { display: block; height: 100%; background: var(--faint); border-radius: 6px; transition: width .6s cubic-bezier(.2,.8,.2,1); }
+.prob.pick .track2 i { background: var(--dec); }
 .prob.pick .tk { color: var(--dec); }
 .prob .v { text-align: right; font-weight: 800; }
 
-/* 9 */
+/* 10 사용 이유 */
+.reasons { gap: 22px; }
+.reasons b { font-size: 28px; }
+.reasons p { font-size: 23px; line-height: 1.5; color: var(--sub); margin-top: 2px; }
+
+/* 11 학습 파이프라인 */
+.pipe { position: relative; height: 690px; }
+.pipe svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.pipe path { fill: none; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+.pipe path.k { stroke: var(--mid); marker-end: url(#ah-k); }
+.pipe .m-k { fill: var(--mid); } .pipe .m-b { fill: var(--bad); }
+.pipe .loop { stroke: var(--bad); stroke-width: 6; stroke-dasharray: 16 12; marker-end: url(#ah-b); animation: march .9s linear infinite; }
+@keyframes march { to { stroke-dashoffset: -28; } }
+.pn { position: absolute; width: 300px; margin-left: -150px; text-align: center; }
+.pn i { display: grid; place-items: center; width: 68px; height: 68px; margin: 0 auto 14px; border-radius: 50%; background: var(--ink); color: var(--paper); font: 800 30px var(--font); font-style: normal; }
+.pn b { display: block; font-size: 30px; }
+.pn p { font-size: 21px; color: var(--sub); line-height: 1.45; margin-top: 4px; }
+.pn.back i { background: var(--bad); }
+.pn.hl i { background: var(--hl); color: #2E2E2E; }
+.rowl { position: absolute; left: 0; font-size: 22px; font-weight: 800; color: var(--mid); }
+.loop-l { position: absolute; width: 640px; margin-left: -320px; text-align: center; font-size: 22px; font-weight: 800; color: var(--bad); white-space: nowrap; background: var(--paper); padding: 0 12px; }
+.settings { position: absolute; left: 0; right: 0; top: 600px; display: grid; grid-template-columns: repeat(6, auto); gap: 18px 34px; padding: 22px 30px; background: var(--tint); border-radius: 20px; margin: 0; }
+.settings dt { font-size: 18px; color: var(--mid); font-weight: 700; }
+.settings dd { margin: 0; font-size: 25px; font-weight: 800; }
+
+/* 12 데이터 */
 .stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
 .stage-c { border-radius: 20px; padding: 26px 28px; background: var(--tint); display: flex; flex-direction: column; gap: 10px; }
 .stage-c .n { font-size: 20px; font-weight: 800; color: var(--mid); }
-.stage-c h3 { font-size: 28px; margin: 0; }
 .stage-c p { font-size: 22px; color: var(--sub); line-height: 1.5; }
-.stage-c .big { font-size: 40px; font-weight: 900; color: var(--ink); line-height: 1.1; }
+.stage-c .big { font-size: 44px; font-weight: 900; color: var(--ink); line-height: 1.1; }
 .aug { display: grid; grid-template-columns: repeat(7, 1fr); gap: 16px; }
 .aug figure { display: flex; flex-direction: column; gap: 8px; }
 .aug canvas { width: 100%; height: auto; border-radius: 8px; box-shadow: 0 0 0 2px var(--line); }
 .aug figcaption { font-size: 21px; font-weight: 700; color: var(--sub); }
 
-/* 10 */
+/* 13 손실 */
 .tf td, .tf th { text-align: center; font-family: var(--mono); font-size: 25px; }
 .tf th:first-child, .tf td:first-child { text-align: left; font-family: var(--font); font-size: 21px; color: var(--mid); font-weight: 800; }
 .tf td.worst { color: var(--bad); font-weight: 800; }
-.slider { display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; font-size: 24px; }
-input[type="range"] { width: 100%; accent-color: var(--dec); height: 32px; }
+.slider { display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; font-size: 24px; font-weight: 700; color: var(--mid); }
+.slider b { color: var(--ink); }
+input[type="range"] { width: 100%; accent-color: var(--hl); height: 32px; }
 .formula { font: 700 30px var(--mono); padding: 22px 28px; background: var(--tint); border-radius: 16px; }
 
-/* 11 */
+/* 14 평가 */
 .fields { display: grid; grid-template-columns: 120px 1fr; gap: 14px 18px; align-items: center; }
 .fields label { font-size: 22px; font-weight: 800; color: var(--mid); }
 .fields input[type="text"] { font: 700 30px var(--mono); padding: 10px 16px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); width: 100%; }
@@ -229,54 +258,62 @@ input[type="range"] { width: 100%; accent-color: var(--dec); height: 32px; }
 .score .v { font-size: 52px; font-weight: 900; line-height: 1.1; }
 .score .k { font-size: 20px; color: var(--mid); font-weight: 800; }
 
-/* 13 */
-#exp { gap: 26px; }
-.exp td { vertical-align: middle; font-size: 22px; padding: 10px 12px; }
-.exp td.txt { font-family: var(--mono); font-weight: 700; white-space: pre; font-size: 20px; }
-.exp canvas { display: block; width: 280px; height: auto; border-radius: 6px; box-shadow: 0 0 0 2px var(--line); }
+/* 17 한계 */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 44px 80px; }
+.lim { display: grid; grid-template-columns: 64px 1fr; gap: 24px; }
+.lim > i { font-style: normal; display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 28px; font-weight: 800; }
+.lim h3 { display: inline; }
+
+/* 18, 19 자체 실험 */
+.exp th { padding: 6px 12px; }
+.exp td { vertical-align: middle; font-size: 21px; padding: 5px 12px; }
+.exp td.txt { font-family: var(--mono); font-weight: 700; white-space: pre; font-size: 19px; }
+.exp td.kind { font-size: 18px; color: var(--mid); font-weight: 700; white-space: nowrap; }
+.exp .thumb { display: block; width: 220px; height: 38px; object-fit: contain; object-position: left center; border-radius: 6px; box-shadow: 0 0 0 2px var(--line); background: #fff; }
 mark.S, mark.I { background: var(--bad-soft); color: var(--bad); border-radius: 4px; padding: 0 2px; }
 mark.I { text-decoration: underline; }
 span.D { color: var(--bad); font-weight: 900; }
-
-/* 14 */
+.na { color: var(--mid); font-family: var(--font); font-weight: 700; }
 .tabs { display: flex; gap: 10px; }
-.deg-img canvas { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 0 0 2px var(--line); }
-.pred { font: 700 44px var(--mono); white-space: pre; }
+.deg-img img, .deg-img canvas { display: block; width: 100%; height: 200px; object-fit: contain; border-radius: 12px; box-shadow: 0 0 0 2px var(--line); background: #fff; }
+.predrow { display: grid; grid-template-columns: 160px 1fr auto; gap: 16px; align-items: baseline; font-size: 24px; }
+.predrow .p { font: 700 34px var(--mono); white-space: pre; }
+.legend { display: flex; gap: 28px; font-size: 20px; font-weight: 700; color: var(--sub); }
+.legend i { display: inline-block; width: 26px; height: 6px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
 
-/* 15 */
-.chain { display: flex; gap: 0; align-items: stretch; }
-.chain > div { flex: 1; padding: 20px 18px; text-align: center; font-size: 24px; font-weight: 800; border: 3px solid var(--faint); border-left-width: 0; background: var(--paper); }
+/* 20 정리 */
+.sum { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 56px 80px; counter-reset: q; }
+.sum li { counter-increment: q; position: relative; padding-left: 88px; font-size: 30px; }
+.sum li::before { content: counter(q); position: absolute; left: 0; top: 0; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--paper); font-size: 28px; font-weight: 800; }
+
+/* 21 끝 */
+.s-end { flex-direction: row; align-items: center; gap: 40px; }
+.end-text { flex: 0 0 1040px; display: flex; flex-direction: column; gap: 44px; }
+.s-end h1 { font-size: 110px; }
+.refs { display: grid; gap: 10px; }
+.refs p { font-size: 21px; line-height: 1.45; }
+
+/* 부록 */
+.chain { display: flex; align-items: stretch; }
+.chain > div { flex: 1; padding: 22px 18px; text-align: center; font-size: 26px; font-weight: 800; border: 3px solid var(--faint); border-left-width: 0; background: var(--paper); }
 .chain > div:first-child { border-left-width: 3px; border-radius: 16px 0 0 16px; }
 .chain > div:last-child { border-radius: 0 16px 16px 0; }
-.chain > div small { display: block; font-size: 18px; font-weight: 600; color: var(--mid); margin-top: 4px; }
-.chain .me { background: var(--enc-soft); border-color: var(--enc); color: var(--ink); }
+.chain > div small { display: block; font-size: 19px; font-weight: 600; color: var(--mid); margin-top: 4px; }
+.chain .me { background: var(--enc-soft); border-color: var(--enc); }
 .chain .llm { border-style: dashed; color: var(--mid); }
-.lim { display: flex; flex-direction: column; gap: 22px; }
-.lim > div { display: grid; grid-template-columns: 54px 1fr; gap: 6px 18px; }
-.lim .n { font-size: 36px; font-weight: 900; color: var(--faint); line-height: 1.2; }
-.lim h3 { font-size: 28px; margin: 0; }
-.lim p { grid-column: 2; font-size: 23px; color: var(--sub); }
-
-/* 16, 17 */
-.take { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
-.take .panel h3 { font-size: 29px; }
-.take .panel p { font-size: 23px; color: var(--sub); }
-.refs { padding-left: 1.4em; display: flex; flex-direction: column; gap: 10px; }
-.refs li { font-size: 22px; color: var(--sub); line-height: 1.5; }
-.refs a { color: var(--enc); text-decoration: none; }
-.qa { font-size: 120px; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
+ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-at], [data-only], [data-dim] { transition: none; }
+  [data-at], [data-only], [data-dim], .stop { transition: none; }
   .draw { stroke-dashoffset: 0; animation: none !important; }
-  .bar-v, .bar-h, .chip.new { animation: none !important; }
+  .bar-h, .chip.new, .pipe .loop { animation: none !important; }
   .packet { display: none; }
 }
 </style>
 
 <div id="deck" data-part="">
   <header class="top">
-    <ol class="parts"><li>배경</li><li>독창성</li><li>모델</li><li>학습</li><li>평가·결과</li><li>자체 실험</li><li>한계</li></ol>
+    <ol class="parts"><li>선택 이유</li><li>독창성</li><li>모델</li><li>파이프라인</li><li>결과</li><li>한계와 극복 아이디어</li></ol>
     <span class="label"></span>
   </header>
 
@@ -284,331 +321,410 @@ span.D { color: var(--bad); font-weight: 900; }
 <section class="slide s-cover" id="cover" data-steps="1">
   <div class="cover-text">
     <p class="kicker">머신러닝 논문 발표</p>
-    <h1>AI는 어떻게<br>사진 속 글자를 읽을까?</h1>
-    <p class="subt">TrOCR와 사전학습 기반 문자 인식</p>
+    <h1>사전학습 Transformer를 이용한<br>광학 문자 인식 (TrOCR)</h1>
     <p class="cite">Li et al., <i>TrOCR: Transformer-Based Optical Character Recognition with Pre-trained Models</i>, AAAI 2023 · Microsoft, Beihang University</p>
-    <ol class="toc"><li>배경</li><li>독창성</li><li>모델</li><li>학습</li><li>평가·결과</li><li>자체 실험</li><li>한계</li></ol>
+    <ol class="toc"><li>논문 선택 이유</li><li>독창성</li><li>모델</li><li>파이프라인</li><li>결과</li><li>한계와 극복 아이디어</li></ol>
   </div>
   <figure>
-    <canvas id="cv-cover" aria-label="손글씨 한 줄 이미지를 패치로 나누고 글자를 한 토큰씩 출력하는 애니메이션"></canvas>
-    <figcaption>사진 한 줄 → 패치 → Encoder → Decoder → 텍스트</figcaption>
+    <canvas id="cv-cover" aria-label="손글씨 한 줄 이미지를 패치로 나누고 글자를 출력하는 애니메이션"></canvas>
+    <figcaption>한 줄 이미지 → 패치 → 인코더 → 디코더 → 텍스트</figcaption>
   </figure>
 </section>
 
-<!-- ================================================================ 2 실생활 -->
-<section class="slide" id="use" data-part="1" data-steps="3">
-  <h2>글자를 읽는 AI는 이미 가까이 있다</h2>
-  <svg id="use-svg" viewBox="0 0 1680 330" style="width:1680px;height:330px" aria-label="촬영에서 텍스트, 언어모델까지 이어지는 파이프라인"></svg>
-  <div class="apps" data-at="1">
-    <div class="panel"><h3>영수증 정리</h3><p>상호, 금액, 날짜를 읽어 가계부·회계 프로그램에 입력</p></div>
-    <div class="panel"><h3>필기 디지털화</h3><p>손으로 쓴 노트와 서류를 검색할 수 있는 텍스트로 변환</p></div>
-    <div class="panel"><h3>번역·접근성</h3><p>간판이나 메뉴를 찍어 번역하거나 소리 내어 읽기</p></div>
-    <div class="panel"><h3>문제 풀이 앱</h3><p>시험지를 찍으면 글자를 읽은 뒤 언어모델이 풀이를 생성</p></div>
-  </div>
-  <div class="ask" data-at="2"><p>AI 치팅 앱도 첫 단계는 OCR이다. 그러나 TrOCR가 하는 일은 <span class="hl-mark">사진 → 글자</span>까지이고, 문제를 푸는 것은 뒤에 붙는 언어모델이다.</p></div>
-</section>
-
-<!-- ================================================================ 3 논문 정보 -->
-<section class="slide" id="paper" data-part="1" data-steps="3">
-  <h2>논문 정보와 연구 질문</h2>
-  <div class="split" style="--l:800px">
-    <div class="paper-card">
-      <span class="tag">AAAI 2023 · Vol. 37 · arXiv:2109.10282</span>
-      <p class="ttl">TrOCR: Transformer-Based Optical Character Recognition with Pre-trained Models</p>
-      <p class="sm">Minghao Li, Tengchao Lv, Jingye Chen, Lei Cui, Yijuan Lu, Dinei Florencio, Cha Zhang, Zhoujun Li, Furu Wei</p>
-      <p class="sm muted">Beihang University · Microsoft</p>
-      <div class="links">
-        <a href="https://ojs.aaai.org/index.php/AAAI/article/view/26538" target="_blank" rel="noopener">AAAI 원논문 ↗</a>
-        <a href="https://github.com/microsoft/unilm/tree/master/trocr" target="_blank" rel="noopener">Microsoft 공식 구현 (unilm/trocr) ↗</a>
-        <a href="https://huggingface.co/microsoft/trocr-small-printed" target="_blank" rel="noopener">공개 모델 microsoft/trocr-small-printed ↗</a>
-      </div>
-    </div>
-    <div class="stack">
-      <div class="ask" data-at="0"><span class="tag">연구 질문</span><p>CNN과 RNN 없이, 이미 사전학습된 이미지 Transformer와 텍스트 Transformer만으로 글자 인식기를 만들 수 있을까?</p></div>
-      <div data-at="1">
-        <h3>논문이 주장하는 기여</h3>
-        <ol class="contrib sm">
-          <li>사전학습된 이미지·텍스트 Transformer를 함께 쓴 End-to-End 문자 인식 모델</li>
-          <li>대규모 합성 데이터로 사전학습한 뒤 과제별 데이터로 Fine-tuning</li>
-          <li>인쇄체(SROIE), 손글씨(IAM), 장면 글자 벤치마크에서 당시 최고 수준 성능</li>
-        </ol>
-      </div>
-      <div class="panel" data-at="2">
-        <h3>연구 범위</h3>
-        <p class="sm">입력은 <b>이미 잘라 낸 한 줄 글자 이미지</b>다. 사진 전체에서 글자 위치를 찾는 <b>텍스트 검출은 범위 밖</b>이라고 논문이 직접 밝힌다.</p>
-      </div>
+<!-- ================================================================ 2 논문 요약 -->
+<section class="slide" id="summary" data-label="개요" data-steps="3">
+  <h2>논문 요약</h2>
+  <p class="lede">사전학습된 이미지 Transformer(인코더)와 텍스트 Transformer(디코더)를 연결해, 잘라 낸 한 줄 글자 이미지를 텍스트로 바꾸는 OCR 모델을 만들고, 대규모 합성 데이터로 사전학습한 뒤 인쇄체·손글씨·장면 글자 벤치마크에서 평가한 연구</p>
+  <div class="track" data-at="1">
+    <svg class="track-line" viewBox="0 0 1680 40" preserveAspectRatio="none" aria-hidden="true"><path class="draw" pathLength="1" d="M40,20 H1640"/></svg>
+    <div class="stops">
+      <div class="stop" style="--i:0"><i></i><b>문제 정의</b><p>CNN·RNN 없이 사전학습 Transformer만으로 글자 인식이 가능한가</p></div>
+      <div class="stop" style="--i:1"><i></i><b>모델</b><p>이미지 Transformer 인코더 + 텍스트 Transformer 디코더 (62M~558M)</p></div>
+      <div class="stop" style="--i:2"><i></i><b>학습</b><p>2단계 사전학습 + Fine-tuning, 교차 엔트로피 손실, 데이터 증강</p></div>
+      <div class="stop" style="--i:3"><i></i><b>평가</b><p>SROIE (F1), IAM (CER), 장면 글자 (단어 정확도)</p></div>
     </div>
   </div>
-</section>
-
-<!-- ================================================================ 4 기존 OCR -->
-<section class="slide" id="old" data-part="2" data-steps="5">
-  <h2>기존 OCR은 여러 부품을 이어 붙인다</h2>
-  <svg id="old-svg" viewBox="0 0 1680 230" style="width:1680px;height:230px" aria-label="CNN, RNN, CTC, 외부 언어모델로 이어지는 기존 파이프라인"></svg>
-  <div class="old-notes">
-    <p data-at="0"><b>CNN</b><br>이미지에서 특징 지도 추출. 보통 처음부터 학습</p>
-    <p data-at="1"><b>RNN (BiLSTM)</b><br>왼쪽에서 오른쪽으로 문맥을 이어 붙임</p>
-    <p data-at="2"><b>CTC 디코딩</b><br>열마다 문자를 고르고 중복·빈칸 제거</p>
-    <p data-at="3"><b>외부 언어모델</b><br>철자 오류를 후처리로 보정. 따로 학습</p>
+  <div class="concepts" data-at="2">
+    <span>핵심 개념 (발표 순서)</span>
+    <ol><li>전이학습</li><li>인코더-디코더</li><li>Self-Attention</li><li>자기회귀 생성</li><li>데이터 증강</li></ol>
   </div>
-  <div class="ask" data-at="4"><p>논문의 문제 제기: 이미지 이해는 CNN, 글자 생성은 RNN, 언어 지식은 별도 모델에 맡기고, <span class="hl-mark">대규모 사전학습 모델은 거의 쓰지 않는다</span>.</p></div>
-  <p class="foot">Li et al. (AAAI 2023) 초록과 서론의 기존 연구 설명을 요약</p>
 </section>
 
-<!-- ================================================================ 5 독창성 -->
-<section class="slide" id="novel" data-part="2" data-steps="2">
-  <h2>TrOCR의 독창성: Transformer 두 개로 끝낸다</h2>
-  <div class="split" style="--l:960px">
-    <table class="t" data-at="0">
-      <tr><th></th><th>기존 (CNN + RNN)</th><th>TrOCR</th></tr>
-      <tr><td><b>이미지 이해</b></td><td>CNN 백본</td><td class="enc-t">이미지 Transformer (패치 입력)</td></tr>
-      <tr><td><b>글자 생성</b></td><td>RNN · 문자 단위 CTC</td><td class="dec-t">텍스트 Transformer · wordpiece 순차 생성</td></tr>
-      <tr><td><b>시작점</b></td><td>대부분 처음부터 학습</td><td>BEiT·DeiT / RoBERTa·MiniLM 가중치</td></tr>
-      <tr><td><b>언어 지식</b></td><td>외부 언어모델로 후처리</td><td>디코더 안에 포함, 외부 LM 없음</td></tr>
-      <tr><td><b>구조</b></td><td>여러 부품의 결합</td><td>Encoder–Decoder 하나 (End-to-End)</td></tr>
-    </table>
-    <div class="stack" data-at="1">
-      <h3>사전학습 Transformer 인코더가 CNN보다 나았다</h3>
-      <div id="novel-chart"></div>
-      <p class="xs muted">SROIE 데이터만으로 학습한 조합 비교 (사전학습 단계 없음), 단어 단위 F1 %</p>
+<!-- ================================================================ 3 선택 이유 -->
+<section class="slide" id="reason" data-part="1" data-steps="5">
+  <h2>논문을 고른 이유</h2>
+  <div class="split" style="--l:720px">
+    <ol class="timeline">
+      <li data-at="0">시험지를 찍으면 풀이를 보여 주는 AI 앱(AI 치팅)이 화제가 된 것을 봄</li>
+      <li data-at="1">이런 앱의 첫 단계인 사진 속 글자를 텍스트로 바꾸는 과정(OCR)이 궁금해짐</li>
+      <li data-at="2">관련 논문을 찾다가 사전학습 Transformer로 OCR을 만든 TrOCR(AAAI 2023)를 알게 됨</li>
+      <li data-at="3">머신러닝 수업 내용과 연결되는 부분이 많아 선택</li>
+    </ol>
+    <div data-at="4">
+      <h3>수업 내용과 연결되는 부분</h3>
+      <table class="t">
+        <tr><th>수업 개념</th><th>논문에서</th></tr>
+        <tr><td>CNN, RNN</td><td>기존 OCR의 특징 추출·문맥 처리 (비교 대상)</td></tr>
+        <tr><td>Attention, Transformer</td><td>인코더·디코더 전체 구조</td></tr>
+        <tr><td>전이학습</td><td>공개 사전학습 가중치로 시작 + 2단계 사전학습</td></tr>
+        <tr><td>손실함수, 역전파</td><td>토큰별 교차 엔트로피로 인코더·디코더 함께 학습</td></tr>
+        <tr><td>과적합 방지</td><td>회전·블러 등 6가지 데이터 증강</td></tr>
+        <tr><td>성능 평가</td><td>CER, F1, 단어 정확도</td></tr>
+        <tr><td>이미지 처리 (블러, 잡음)</td><td>한계 극복 아이디어 (6부)</td></tr>
+      </table>
     </div>
   </div>
-  <p class="foot">출처: Li et al., Table 1 (arXiv:2109.10282v5)</p>
 </section>
 
-<!-- ================================================================ 6 전체 구조 -->
+<!-- ================================================================ 4 배경 -->
+<section class="slide" id="background" data-part="2" data-steps="4">
+  <h2>배경</h2>
+  <svg id="bg-svg" viewBox="0 0 1680 250" style="width:1680px;height:250px" aria-label="사진에서 검출, 인식, 텍스트, 언어모델로 이어지는 과정"></svg>
+  <div class="cols3">
+    <div data-at="1"><h3>OCR의 두 단계</h3><p class="sm">검출: 사진에서 글자 영역(상자) 찾기<br>인식: 잘라 낸 영역을 글자열로 변환<br>TrOCR는 인식만 다룸 (검출은 논문 범위 밖)</p></div>
+    <div data-at="2"><h3>기존 인식 방법</h3><p class="sm">CNN으로 이미지 특징 추출<br>RNN으로 문맥 처리, CTC로 글자열 출력<br>정확도를 높이기 위해 외부 언어모델로 후처리</p></div>
+    <div data-at="3" class="ask"><h3>논문의 질문</h3><p class="sm"><b>CNN·RNN 없이 사전학습된 이미지·텍스트 Transformer만으로 글자를 인식할 수 있는가</b></p></div>
+  </div>
+</section>
+
+<!-- ================================================================ 5 기존 방법과 비교 -->
+<section class="slide" id="compare" data-part="2" data-steps="3">
+  <h2>기존 방법과 비교</h2>
+  <svg id="cmp-svg" viewBox="0 0 1680 290" style="width:1680px;height:290px" aria-label="기존 네 단계 파이프라인과 TrOCR 두 단계 구조 비교"></svg>
+  <table class="t" data-at="2" style="font-size:23px">
+    <tr><th></th><th>기존 (CNN + RNN + CTC)</th><th>TrOCR</th></tr>
+    <tr><td><b>이미지 이해</b></td><td>CNN 특징 지도</td><td class="enc-t">이미지 Transformer, 16×16 패치 입력</td></tr>
+    <tr><td><b>글자 생성</b></td><td>RNN + CTC, 문자 단위</td><td class="dec-t">텍스트 Transformer, wordpiece 단위 자기회귀</td></tr>
+    <tr><td><b>시작 가중치</b></td><td>사전학습 모델 활용 적음</td><td>BEiT·DeiT / RoBERTa·MiniLM 사전학습 가중치</td></tr>
+    <tr><td><b>언어 지식</b></td><td>외부 언어모델로 후처리</td><td>디코더에 포함, 외부 언어모델 없음</td></tr>
+  </table>
+</section>
+
+<!-- ================================================================ 6 독창성 -->
+<section class="slide" id="novelty" data-part="2" data-steps="4">
+  <h2>독창성</h2>
+  <div class="figs">
+    <div data-at="0"><div class="fig-n">2<small>Transformer</small></div><div><h3>사전학습 Transformer만으로 구성</h3><p class="sm">이미지 Transformer 인코더 + 텍스트 Transformer 디코더. CNN 백본과 RNN 없음. 사전학습된 이미지·텍스트 Transformer를 함께 쓴 첫 OCR 연구 (논문 주장)</p></div></div>
+    <div data-at="1"><div class="fig-n">0<small>외부 언어모델</small></div><div><h3>외부 언어모델 없이 인식</h3><p class="sm">디코더를 텍스트 사전학습 모델(RoBERTa, MiniLM)로 초기화해 언어 지식 포함. 후처리 언어모델 불필요</p></div></div>
+    <div data-at="2"><div class="fig-n">6.84억<small>줄</small></div><div><h3>대규모 합성 데이터 사전학습</h3><p class="sm">1단계: 공개 PDF 200만 페이지에서 만든 인쇄체 텍스트 줄. 2단계: 손글씨·인쇄체·장면 글자 과제별 합성 데이터</p></div></div>
+    <div data-at="3"><div class="fig-n">1<small>구조</small></div><div><h3>세 종류 글자에 같은 구조</h3><p class="sm">모델 구조 변경 없이 데이터별 Fine-tuning만으로 인쇄체·손글씨·장면 글자 벤치마크에 적용</p></div></div>
+  </div>
+</section>
+
+<!-- ================================================================ 7 TrOCR 구조 -->
 <section class="slide" id="arch" data-part="3" data-steps="5">
-  <h2>모델 전체 구조</h2>
-  <svg id="arch-svg" viewBox="0 0 1680 500" style="width:1680px;height:500px" aria-label="입력 이미지가 패치로 나뉘어 Encoder와 Decoder를 거쳐 텍스트가 되는 구조도"></svg>
+  <h2>TrOCR 구조</h2>
+  <svg id="arch-svg" viewBox="0 0 1680 500" style="width:1680px;height:500px" aria-label="입력 이미지가 패치로 나뉘어 인코더와 디코더를 거쳐 텍스트가 되는 구조도"></svg>
   <div class="row" data-at="4" style="gap:24px;flex-wrap:nowrap">
     <div class="panel" style="flex:1"><span class="tag">TrOCR-Small · 62M</span><p class="sm">DeiT-Small 인코더 + MiniLM 디코더</p></div>
     <div class="panel" style="flex:1"><span class="tag">TrOCR-Base · 334M</span><p class="sm">BEiT-Base 인코더 + RoBERTa-Large 디코더</p></div>
     <div class="panel" style="flex:1"><span class="tag">TrOCR-Large · 558M</span><p class="sm">BEiT-Large 인코더 + RoBERTa-Large 디코더</p></div>
   </div>
-  <p class="foot">파라미터 수와 초기화 모델: Li et al., Table 5 및 실험 설정</p>
+  <p class="foot">파라미터 수와 초기화 모델: Li et al., Table 5 및 실험 설정 (arXiv:2109.10282v5)</p>
 </section>
 
-<!-- ================================================================ 7 Encoder -->
+<!-- ================================================================ 8 인코더 -->
 <section class="slide" id="encoder" data-part="3" data-steps="5">
-  <h2><span class="enc-t">Encoder</span>: 이미지를 패치 문장으로 바꾼다</h2>
+  <h2>인코더 (Image Transformer)</h2>
   <div class="split" style="--l:1000px;gap:60px">
     <div class="cvbox"><canvas id="cv-enc" aria-label="한 줄 이미지가 384x384로 바뀌고 16x16 패치로 나뉘어 한 줄로 펼쳐지는 애니메이션"></canvas></div>
     <div class="steptext">
       <div class="stackonly">
-        <div data-only="0"><span class="tag">입력</span><h3>잘라 낸 한 줄 이미지</h3><p>TrOCR는 글자가 들어 있는 한 줄 영역을 입력으로 받는다. 이 영역을 찾는 일은 논문 범위 밖이다.</p></div>
-        <div data-only="1"><span class="tag">1 크기 조정</span><h3>384 × 384로 맞춘다</h3><p>가로세로 비율과 상관없이 정사각형으로 늘린다. 그래서 글자가 세로로 길쭉해진다.</p></div>
-        <div data-only="2"><span class="tag">2 패치 분할</span><h3>16 × 16 패치로 자른다</h3><p>384 ÷ 16 = 24이므로 가로 24 × 세로 24 = <b>576개</b> 패치가 생긴다. ViT처럼 패치 하나가 단어 하나 역할을 한다.</p></div>
-        <div data-only="3"><span class="tag">3 펼치기</span><h3>한 줄로 펼치고 위치를 붙인다</h3><p>패치를 평평한 벡터로 만든 뒤 선형 변환한다. 맨 앞에 [CLS] 토큰을 두고, 순서를 알 수 있게 학습되는 1차원 위치 임베딩을 더한다.</p></div>
-        <div data-only="4"><span class="tag">4 Self-Attention</span><h3>모든 패치가 서로를 참고한다</h3><p>여러 층의 Self-Attention과 FFN을 거쳐 패치마다 문맥이 담긴 시각 특징 벡터가 나온다. 이 벡터들이 Decoder로 간다.</p><span class="badge concept">연결선 굵기는 개념도 · 실제 Attention 값 아님</span></div>
+        <div data-only="0"><span class="tag">입력</span><h3>잘라 낸 한 줄 이미지</h3><p>글자 한 줄 영역 이미지<br>영역을 찾는 검출은 논문 범위 밖</p></div>
+        <div data-only="1"><span class="tag">1 크기 조정</span><h3>384 × 384</h3><p>가로세로 비율과 관계없이 정사각형으로 변환<br>글자가 세로로 늘어남</p></div>
+        <div data-only="2"><span class="tag">2 패치 분할</span><h3>16 × 16 패치 576개</h3><p>384 ÷ 16 = 24 → 24 × 24 = 576개<br>ViT처럼 패치 하나를 단어 하나처럼 처리</p></div>
+        <div data-only="3"><span class="tag">3 패치 임베딩</span><h3>패치 벡터 + 위치 임베딩</h3><p>패치를 펼쳐 선형 변환으로 벡터화<br>맨 앞에 [CLS] 토큰 추가, 학습되는 1차원 위치 임베딩 더함<br>화면은 13번째 줄 24개만 표시</p></div>
+        <div data-only="4"><span class="tag">4 Self-Attention</span><h3>Self-Attention + FFN × L층</h3><p>모든 패치가 서로를 참고해 문맥이 담긴 특징 벡터 생성<br>결과는 디코더 Cross-Attention의 입력</p><span class="badge concept">연결선 굵기는 개념도 · 실제 Attention 값 아님</span></div>
       </div>
     </div>
   </div>
-  <p class="foot">입력 해상도 384×384, 패치 16×16, [CLS] 유지, 학습 가능한 1D 위치 임베딩: Li et al., 모델 설명</p>
+  <p class="foot">입력 해상도 384×384, 패치 16×16, [CLS] 유지, 학습되는 1D 위치 임베딩: Li et al., 모델 설명</p>
 </section>
 
-<!-- ================================================================ 8 Decoder -->
+<!-- ================================================================ 9 디코더 -->
 <section class="slide" id="decoder" data-part="3" data-steps="7">
-  <h2><span class="dec-t">Decoder</span>: 글자를 한 조각씩 써 내려간다</h2>
+  <h2>디코더 (Text Transformer)</h2>
   <div class="split" style="--l:1100px;gap:60px">
     <div class="stack" style="gap:30px">
       <div class="dec-img"><canvas id="cv-dec" aria-label="입력 이미지"></canvas><div class="dec-att" id="dec-att"></div></div>
       <div class="stack" style="gap:12px">
-        <span class="tag">지금까지 생성한 토큰 (다음 단계의 입력이 됨)</span>
+        <span class="tag">생성한 토큰 (다음 단계의 입력)</span>
         <div class="seq" id="dec-seq"></div>
       </div>
       <div class="panel">
-        <p class="sm"><b class="dec-t">Masked Self-Attention</b> 앞에서 이미 쓴 토큰만 본다 (뒤를 미리 보지 않음)<br>
-        <b class="enc-t">Cross-Attention</b> Encoder가 만든 이미지 특징 중 필요한 위치를 본다<br>
-        <b>출력</b> 어휘 전체에 대한 확률 → 가장 그럴듯한 토큰 선택, <span class="mono">[EOS]</span>가 나오면 끝</p>
+        <p class="sm"><b class="dec-t">Masked Self-Attention</b> 앞에서 생성한 토큰만 참고 (뒤 토큰은 가림)<br>
+        <b class="enc-t">Cross-Attention</b> 인코더의 이미지 특징 중 필요한 위치 참고<br>
+        <b>출력</b> 어휘 전체에 대한 확률 → 토큰 선택, <span class="mono">[EOS]</span>에서 종료</p>
       </div>
     </div>
     <div class="stack">
       <div class="row" style="justify-content:space-between"><span class="tag" style="margin:0">다음 토큰 후보 확률</span><button class="btn" id="dec-play" type="button">자동 재생</button></div>
       <div class="probs" id="dec-probs"></div>
       <p class="xs muted" id="dec-note"></p>
-      <span class="badge concept" style="align-self:flex-start">개념도 · 토큰 분할·확률·주목 영역은 설명용 값</span>
-      <p class="xs muted">실제 추론은 하나만 고르지 않고 후보 10개를 동시에 유지하는 빔 서치(빔 크기 10)를 쓴다.</p>
+      <span class="badge concept">개념도 · 토큰 분할·확률·주목 영역은 설명용 값</span>
+      <p class="xs muted">실제 추론: 후보 10개를 동시에 유지하는 빔 서치 (빔 크기 10)</p>
     </div>
   </div>
 </section>
 
-<!-- ================================================================ 9 사전학습 -->
-<section class="slide" id="pretrain" data-part="4" data-steps="5">
-  <h2>사전학습과 Fine-tuning</h2>
-  <div class="stages">
-    <div class="stage-c" data-at="0"><span class="n">0 초기화</span><h3>남이 배운 가중치로 시작</h3><p><span class="enc-t">Encoder</span> ← BEiT / DeiT<br>(이미지로 사전학습)<br><span class="dec-t">Decoder</span> ← RoBERTa / MiniLM<br>(텍스트로 사전학습)</p></div>
-    <div class="stage-c" data-at="1"><span class="n">1단계 사전학습</span><h3>인쇄체 대량 학습</h3><p class="big">6.84억 줄</p><p>공개 PDF 문서 200만 페이지에서 만든 인쇄체 텍스트 줄 이미지</p></div>
-    <div class="stage-c" data-at="2"><span class="n">2단계 사전학습</span><h3>과제에 맞춘 합성 데이터</h3><p>손글씨 <b>1,790만 줄</b> (손글씨 폰트 5,427종)<br>인쇄체 <b>330만 줄</b> (영수증 포함)<br>장면 글자 MJSynth + SynthText 약 1,600만</p></div>
-    <div class="stage-c" data-at="3"><span class="n">Fine-tuning</span><h3>벤치마크별 마무리</h3><p>SROIE (영수증 인쇄체)<br>IAM (영어 손글씨)<br>장면 글자 벤치마크</p></div>
+<!-- ================================================================ 10 사용 이유 -->
+<section class="slide" id="why" data-part="3" data-steps="3">
+  <h2>이 모델을 사용한 이유</h2>
+  <div class="split" style="--l:900px">
+    <div class="stack reasons">
+      <div data-at="0"><b>전이학습</b><p>이미지·텍스트 각각 대규모 데이터로 학습된 가중치 재사용. 글자 데이터만으로 처음부터 학습할 때보다 높은 성능 (SROIE F1: 처음부터 38.24 → 사전학습 모델 초기화 72.75)</p></div>
+      <div data-at="0"><b>Self-Attention</b><p>모든 패치가 한 번에 서로를 참고해 줄 전체의 정보 반영. CNN은 층을 쌓아야 넓은 영역을 봄</p></div>
+      <div data-at="1"><b>자기회귀 디코더</b><p>앞에서 생성한 토큰을 조건으로 다음 토큰 예측. 언어 지식이 예측에 포함되어 외부 언어모델 불필요</p></div>
+      <div data-at="1"><b>wordpiece 출력</b><p>단어 조각 단위 생성으로 문자 단위보다 짧은 출력, 어휘에 없는 단어도 조각으로 표현</p></div>
+    </div>
+    <div class="stack" data-at="2" style="gap:14px">
+      <h3>인코더 비교 <span class="muted" style="font-size:22px">SROIE만으로 학습 · F1 %</span></h3>
+      <div id="why-chart"></div>
+      <p class="xs muted">사전학습 단계 없이 SROIE 데이터만으로 학습한 조합 비교 (Table 1)</p>
+    </div>
   </div>
-  <div class="stack" data-at="4" style="gap:16px">
-    <div class="row" style="justify-content:space-between"><h3 style="margin:0">데이터 증강: 원본 + 6가지 변환 중 같은 확률로 하나</h3><span class="badge concept">브라우저에서 흉내 낸 예시</span></div>
+  <p class="foot">출처: Li et al., Table 1·2 (arXiv:2109.10282v5)</p>
+</section>
+
+<!-- ================================================================ 11 학습 파이프라인 -->
+<section class="slide" id="pipeline" data-part="4" data-steps="4">
+  <h2>학습 파이프라인</h2>
+  <div class="pipe">
+    <svg viewBox="0 0 1680 690" aria-hidden="true">
+      <defs>
+        <marker id="ah-k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="m-k"/></marker>
+        <marker id="ah-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="m-b"/></marker>
+      </defs>
+      <g data-at="0"><path class="draw k" pathLength="1" d="M260,34 H580"/><path class="draw k" pathLength="1" d="M680,34 H1000" style="--delay:.3s"/><path class="draw k" pathLength="1" d="M1100,34 H1420" style="--delay:.6s"/></g>
+      <g data-at="1"><path class="draw k" pathLength="1" d="M260,324 H580"/><path class="draw k" pathLength="1" d="M680,324 H1000" style="--delay:.3s"/><path class="draw k" pathLength="1" d="M1100,324 H1420" style="--delay:.6s"/></g>
+      <g data-at="2"><path class="loop" d="M1470,520 C1470,585 210,585 210,525"/></g>
+    </svg>
+    <div class="pn" data-at="0" style="left:210px;top:0"><i>1</i><b>초기화</b><p>인코더 ← BEiT·DeiT<br>디코더 ← RoBERTa·MiniLM</p></div>
+    <div class="pn" data-at="0" style="left:630px;top:0"><i>2</i><b>1단계 사전학습</b><p>인쇄체 텍스트 줄 6.84억 개</p></div>
+    <div class="pn" data-at="0" style="left:1050px;top:0"><i>3</i><b>2단계 사전학습</b><p>과제별 합성 데이터 (손글씨·인쇄체·장면 글자)</p></div>
+    <div class="pn hl" data-at="0" style="left:1470px;top:0"><i>4</i><b>Fine-tuning</b><p>SROIE, IAM, 장면 글자 벤치마크별 학습 후 평가</p></div>
+    <p class="rowl" data-at="1" style="top:222px">2~4 각 단계 안에서 반복하는 학습 과정</p>
+    <div class="pn" data-at="1" style="left:210px;top:290px"><i>5</i><b>데이터 증강</b><p>회전, 블러, 팽창, 침식, 축소, 밑줄 중 하나</p></div>
+    <div class="pn" data-at="1" style="left:630px;top:290px"><i>6</i><b>순전파</b><p>이미지 → 인코더 → 디코더 (정답을 한 칸 민 입력) → 토큰별 확률</p></div>
+    <div class="pn" data-at="1" style="left:1050px;top:290px"><i>7</i><b>손실</b><p>정답 토큰의 교차 엔트로피</p></div>
+    <div class="pn back" data-at="1" style="left:1470px;top:290px"><i>8</i><b>역전파·갱신</b><p>기울기 계산 후 인코더·디코더 파라미터 함께 갱신</p></div>
+    <p class="loop-l" data-at="2" style="left:840px;top:548px">파라미터 갱신 후 다음 배치로 반복</p>
+    <dl class="settings" data-at="3">
+      <div><dt>입력</dt><dd>384 × 384</dd></div><div><dt>배치</dt><dd>2,048</dd></div><div><dt>학습률</dt><dd>5e-5</dd></div>
+      <div><dt>손실</dt><dd>교차 엔트로피</dd></div><div><dt>추론</dt><dd>빔 서치 (빔 10)</dd></div><div><dt>사전학습 장비</dt><dd>V100 32장</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ================================================================ 12 사전학습 데이터 -->
+<section class="slide" id="data" data-part="4" data-steps="2">
+  <h2>사전학습 데이터와 데이터 증강</h2>
+  <div class="stages" data-at="0">
+    <div class="stage-c"><span class="n">1단계 사전학습</span><p class="big">6.84억 줄</p><p>공개 PDF 문서 200만 페이지에서 만든 인쇄체 텍스트 줄 이미지</p></div>
+    <div class="stage-c"><span class="n">2단계 · 손글씨</span><p class="big">1,790만 줄</p><p>손글씨 폰트 5,427종으로 합성 (TRDG), Wikipedia 문장</p></div>
+    <div class="stage-c"><span class="n">2단계 · 인쇄체</span><p class="big">330만 줄</p><p>실제 영수증 약 5.3만 장 (상용 OCR로 정답 생성) + 합성 인쇄체</p></div>
+    <div class="stage-c"><span class="n">2단계 · 장면 글자</span><p class="big">약 1,600만</p><p>MJSynth + SynthText 합성 단어 이미지</p></div>
+  </div>
+  <div class="stack" data-at="1" style="gap:16px">
+    <div class="row" style="justify-content:space-between"><h3 style="margin:0">데이터 증강 (인쇄체·손글씨)</h3><span class="badge concept">브라우저에서 재현한 예시</span></div>
     <div class="aug" id="aug"></div>
+    <p class="xs muted">원본 + 6가지 변환 중 같은 확률로 하나 선택. 장면 글자는 RandAugment</p>
   </div>
   <p class="foot">데이터 규모와 증강 종류: Li et al., 사전학습 데이터·데이터 증강 절 (arXiv v5)</p>
 </section>
 
-<!-- ================================================================ 10 손실함수 -->
+<!-- ================================================================ 13 손실함수 -->
 <section class="slide" id="loss" data-part="4" data-steps="3">
-  <h2>학습: 정답 토큰의 확률을 높인다</h2>
+  <h2>손실함수</h2>
   <div class="split" style="--l:1000px">
     <div class="stack">
-      <p class="sm" data-at="0">학습 때는 <b>정답을 한 칸 밀어서</b> 디코더 입력으로 넣는다 (teacher forcing). 위치마다 다음 정답 토큰을 맞혀야 한다.</p>
+      <p class="sm" data-at="0">학습 시 정답을 한 칸 밀어 디코더 입력으로 사용 (teacher forcing). 위치마다 다음 정답 토큰 예측</p>
       <table class="t tf" id="tf-table" data-at="0"></table>
       <div class="formula" data-at="1">L = −(1/T) Σ log p(y<sub>t</sub> | y<sub>&lt;t</sub>, 이미지) <span id="tf-mean" class="dec-t"></span></div>
-      <span class="badge concept" data-at="1" style="align-self:flex-start">확률 값은 설명용 예시</span>
+      <span class="badge concept" data-at="1">확률 값은 설명용 예시</span>
     </div>
     <div class="stack" data-at="2">
-      <h3>틀릴수록 손실이 가파르게 커진다</h3>
+      <h3>정답 확률과 손실</h3>
       <div id="loss-chart"></div>
       <div class="slider"><label for="tf-p">세 번째 토큰 <span class="mono">"."</span>의 확률</label><input type="range" id="tf-p" min="1" max="100" value="48"><b id="tf-pv" class="mono">0.48</b></div>
-      <p class="xs muted">손실 = 교차 엔트로피 (Cross-Entropy). 정답 확률이 1이면 0, 0에 가까워지면 무한히 커진다.</p>
+      <p class="xs muted">교차 엔트로피: 정답 확률이 1이면 손실 0, 0에 가까울수록 급격히 증가</p>
     </div>
   </div>
 </section>
 
-<!-- ================================================================ 11 CER WER -->
+<!-- ================================================================ 14 평가 방법 -->
 <section class="slide" id="metric" data-part="5" data-steps="3">
-  <h2>평가 지표: CER과 WER</h2>
-  <div class="split" style="--l:1040px">
-    <div class="stack">
-      <div class="formula" data-at="0">CER = (S + D + I) / N<span class="muted" style="font-size:22px;font-family:var(--font)">  ·  S 바뀜, D 빠짐, I 끼어듦, N 정답 글자 수</span></div>
-      <div class="stack" data-at="1" style="gap:20px">
-        <div class="fields">
-          <label for="m-gt">정답</label><input type="text" id="m-gt" value="TOTAL 12.50 CASH" spellcheck="false">
-          <label for="m-pred">인식 결과</label><input type="text" id="m-pred" value="T0TAL 12.5 CASHH" spellcheck="false">
-        </div>
-        <div class="align" id="m-align" aria-live="polite"></div>
-        <p class="xs muted">직접 고쳐 보세요. 편집 거리(Levenshtein)로 정렬하고 바로 계산합니다.</p>
+  <h2>평가 방법</h2>
+  <table class="t" data-at="0" style="font-size:24px">
+    <tr><th>데이터</th><th>종류</th><th>평가 지표</th></tr>
+    <tr><td><b>SROIE</b></td><td>영수증 인쇄체 (ICDAR 2019)</td><td>단어 단위 정밀도 · 재현율 · F1</td></tr>
+    <tr><td><b>IAM</b></td><td>영어 손글씨 문장</td><td>CER (문자 오류율, 대소문자 구분)</td></tr>
+    <tr><td><b>장면 글자 8종</b></td><td>간판·거리 사진 속 단어</td><td>단어 정확도</td></tr>
+  </table>
+  <div class="split" style="--l:1040px;gap:56px">
+    <div class="stack" data-at="1" style="gap:18px">
+      <div class="formula" style="font-size:26px">CER = (S + D + I) / N<span class="muted" style="font-size:20px;font-family:var(--font)">  ·  S 바뀜, D 빠짐, I 끼어듦, N 정답 글자 수</span></div>
+      <div class="fields">
+        <label for="m-gt">정답</label><input type="text" id="m-gt" value="TOTAL 12.50 CASH" spellcheck="false">
+        <label for="m-pred">인식 결과</label><input type="text" id="m-pred" value="T0TAL 12.5 CASHH" spellcheck="false">
       </div>
+      <div class="align" id="m-align" aria-live="polite"></div>
     </div>
-    <div class="stack">
-      <div class="score" data-at="1">
+    <div class="stack" data-at="2">
+      <div class="score">
         <div class="panel"><div class="k">CER (문자 오류율)</div><div class="v" id="m-cer">–</div><div class="xs muted" id="m-cer-f"></div></div>
         <div class="panel"><div class="k">WER (단어 오류율)</div><div class="v" id="m-wer">–</div><div class="xs muted" id="m-wer-f"></div></div>
       </div>
-      <p class="sm" data-at="1">둘 다 <b>낮을수록 좋다</b>. 글자 하나만 틀려도 그 단어 전체가 WER에서는 오류가 된다.</p>
-      <table class="t" data-at="2">
-        <tr><th>데이터</th><th>논문의 지표</th></tr>
-        <tr><td>IAM 손글씨</td><td>CER (대소문자 구분)</td></tr>
-        <tr><td>SROIE 영수증</td><td>단어 단위 Precision · Recall · F1</td></tr>
-        <tr><td>장면 글자</td><td>단어 정확도 (Word Accuracy)</td></tr>
+      <p class="sm">둘 다 낮을수록 좋음. 글자 하나만 틀려도 WER에서는 단어 전체가 오류</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ 15 사전학습·증강 효과 -->
+<section class="slide" id="ablation" data-part="5" data-steps="2">
+  <h2>사전학습과 데이터 증강의 효과</h2>
+  <div class="split" style="--l:980px">
+    <div class="stack" style="gap:14px">
+      <h3>SROIE · F1 %</h3>
+      <div id="abl-chart"></div>
+    </div>
+    <div class="stack" data-at="1">
+      <h3>단계별 차이</h3>
+      <table class="t" style="font-size:24px">
+        <tr><td>사전학습 모델로 초기화</td><td class="num"><b>+34.51</b></td></tr>
+        <tr><td>데이터 증강 추가</td><td class="num"><b>+9.55</b></td></tr>
+        <tr><td>1단계 사전학습 추가</td><td class="num"><b>+13.18</b></td></tr>
+        <tr><td>2단계 사전학습 추가</td><td class="num"><b>+0.36</b></td></tr>
+      </table>
+      <p class="sm muted">앞 단계를 모두 포함한 누적 결과. 단계별 차이를 각 기법의 독립적인 효과로 해석하지 않음</p>
+    </div>
+  </div>
+  <p class="foot">출처: Li et al., Table 2 (arXiv:2109.10282v5)</p>
+</section>
+
+<!-- ================================================================ 16 벤치마크 결과 -->
+<section class="slide" id="bench" data-part="5" data-steps="2">
+  <h2>벤치마크 결과</h2>
+  <div class="split" style="--l:860px">
+    <div class="stack" data-at="0" style="gap:10px">
+      <h3>IAM 손글씨 <span class="muted" style="font-size:22px">CER %, 낮을수록 좋음</span></h3>
+      <div id="iam-chart"></div>
+    </div>
+    <div class="stack" data-at="1">
+      <h3>SROIE 영수증 <span class="muted" style="font-size:22px">F1 %</span></h3>
+      <table class="t" style="font-size:23px">
+        <tr class="me"><td>TrOCR-Large</td><td class="num">96.58</td></tr>
+        <tr><td>H&amp;H Lab (대회 1위)</td><td class="num">96.43</td></tr>
+        <tr><td>TrOCR-Base</td><td class="num">96.34</td></tr>
+        <tr><td>TrOCR-Small</td><td class="num">95.82</td></tr>
+        <tr><td>MSOLab</td><td class="num">94.82</td></tr>
+        <tr><td>CLOVA OCR</td><td class="num">94.59</td></tr>
+        <tr><td>Tesseract</td><td class="num">54.57</td></tr>
+        <tr><td>CRNN</td><td class="num">36.09</td></tr>
       </table>
     </div>
   </div>
+  <p class="foot">출처: Li et al., Table 3·4 (arXiv:2109.10282v5)</p>
 </section>
 
-<!-- ================================================================ 12 원논문 결과 -->
-<section class="slide" id="result" data-part="5" data-steps="4">
-  <h2>원논문 실험 결과</h2>
-  <div class="split" style="--l:900px">
-    <div class="stack" style="gap:14px">
-      <h3>사전학습·데이터 증강의 효과 <span class="muted" style="font-size:22px">SROIE · F1 %</span></h3>
-      <div id="abl-chart"></div>
-      <p class="xs muted">아래로 갈수록 앞 단계를 모두 포함한 누적 결과다. 단계별 차이를 각 기법의 독립적인 효과로 해석하지 않는다.</p>
+<!-- ================================================================ 17 한계 -->
+<section class="slide" id="limit" data-part="6" data-steps="2">
+  <h2>논문의 한계</h2>
+  <div class="grid2">
+    <div class="lim"><i>1</i><div><h3 data-hl="1">촬영 품질 변화에 대한 분석 없음</h3><p class="sm">벤치마크 이미지 기준 평가. 흐림·기울기·잡음 정도에 따른 성능 변화는 따로 분석하지 않음</p></div></div>
+    <div class="lim" data-dim="1"><i>2</i><div><h3>텍스트 검출 미포함</h3><p class="sm">잘라 낸 한 줄 이미지만 입력. 문서·시험지 전체를 읽으려면 별도 검출 모델 필요</p></div></div>
+    <div class="lim" data-dim="1"><i>3</i><div><h3>큰 모델과 느린 추론</h3><p class="sm">Base 334M 파라미터. IAM 2,915문장 기준 초당 4.60문장 (Small 8.37문장)</p></div></div>
+    <div class="lim" data-dim="1"><i>4</i><div><h3>영어 중심 공개 모델</h3><p class="sm">공개 모델은 영어 데이터·토크나이저로 학습. 한국어 등은 다시 학습 필요</p></div></div>
+  </div>
+  <div class="panel" data-at="1">
+    <h3>1번에 대한 극복 아이디어</h3>
+    <p class="sm">공개 모델에 흐림·회전·잡음을 단계별로 넣어 인식 결과(CER) 변화 측정. 재학습 없이 노트북에서 확인 가능. 약한 조건을 찾으면 해당 조건 위주의 데이터 증강·전처리(기울기 보정 등)로 보완</p>
+  </div>
+</section>
+
+<!-- ================================================================ 18 품질 변화 실험 -->
+<section class="slide" id="degrade" data-part="6" data-steps="1">
+  <div class="row" style="justify-content:space-between"><h2>이미지 품질에 따른 인식 변화</h2><span class="badge warn" id="deg-badge" hidden>TrOCR 미측정</span></div>
+  <div class="split" style="--l:820px">
+    <div class="stack" style="gap:22px">
+      <div class="tabs" role="tablist" id="deg-tabs"></div>
+      <div class="deg-img" id="deg-img"></div>
+      <div class="slider"><label for="deg-lv" id="deg-lv-l">강도</label><input type="range" id="deg-lv" min="0" max="4" step="1" value="0"><b id="deg-lv-v" class="mono">0</b></div>
+      <div class="stack" style="gap:10px" id="deg-pred"></div>
     </div>
-    <div class="stack" style="gap:26px">
-      <div class="stack" data-at="2" style="gap:10px">
-        <h3>IAM 손글씨 <span class="muted" style="font-size:22px">CER %, 낮을수록 좋음</span></h3>
-        <div id="iam-chart"></div>
-      </div>
-      <div data-at="3">
-        <h3>SROIE 영수증 <span class="muted" style="font-size:22px">F1 %</span></h3>
-        <table class="t" style="font-size:22px">
-          <tr class="me"><td>TrOCR-Large</td><td class="num">96.58</td><td>TrOCR-Small</td><td class="num">95.82</td></tr>
-          <tr><td>H&amp;H Lab (대회 1위)</td><td class="num">96.43</td><td>CLOVA OCR</td><td class="num">94.59</td></tr>
-          <tr><td>Tesseract</td><td class="num">54.57</td><td>CRNN</td><td class="num">36.09</td></tr>
-        </table>
-      </div>
+    <div class="stack" style="gap:14px">
+      <h3 id="deg-ct">강도별 CER</h3>
+      <div class="legend" id="deg-legend"></div>
+      <div id="deg-chart"></div>
+      <p class="xs muted" id="deg-note"></p>
     </div>
   </div>
-  <p class="foot">출처: Li et al., Table 2·3·4 (arXiv:2109.10282v5)</p>
 </section>
 
-<!-- ================================================================ 13 자체 실험 -->
-<section class="slide" id="exp" data-part="6" data-steps="2">
-  <div class="row" style="justify-content:space-between"><h2>자체 OCR 비교 실험</h2><span class="badge warn" id="exp-badge" hidden>예시값 · 실제 측정 결과로 교체 예정</span></div>
-  <div class="row sm" id="exp-setup" style="gap:12px 36px"></div>
+<!-- ================================================================ 19 공개 모델 비교 -->
+<section class="slide" id="exp" data-label="추가" data-steps="2" style="gap:24px">
+  <div class="row" style="justify-content:space-between"><h2>공개 모델로 직접 비교</h2><span class="badge warn" id="exp-badge" hidden>TrOCR 미측정</span></div>
+  <div class="row sm" id="exp-setup" style="gap:8px 32px"></div>
   <table class="t exp" id="exp-table" data-at="0"></table>
   <div class="score" id="exp-sum" data-at="1"></div>
 </section>
 
-<!-- ================================================================ 14 품질 변화 -->
-<section class="slide" id="degrade" data-part="6" data-steps="1">
-  <div class="row" style="justify-content:space-between"><h2>이미지 품질이 나빠지면 어떻게 될까</h2><span class="badge warn" id="deg-badge" hidden>예시값 · 실제 측정 결과로 교체 예정</span></div>
-  <div class="split" style="--l:860px">
-    <div class="stack">
-      <div class="tabs" role="tablist" id="deg-tabs"></div>
-      <div class="deg-img"><canvas id="cv-deg" aria-label="선택한 조건을 적용한 입력 이미지"></canvas></div>
-      <div class="slider"><label for="deg-lv" id="deg-lv-l">강도</label><input type="range" id="deg-lv" min="0" max="4" step="1" value="0"><b id="deg-lv-v" class="mono">0</b></div>
-      <div class="stack" style="gap:6px"><span class="tag" style="margin:0">이 조건에서 측정한 TrOCR 인식 결과</span><div class="pred" id="deg-pred"></div><p class="sm" id="deg-cer"></p></div>
-    </div>
-    <div class="stack">
-      <h3 id="deg-ct">조건 강도별 CER</h3>
-      <div id="deg-chart"></div>
-      <p class="xs muted">왼쪽 이미지는 같은 조건을 브라우저에서 적용한 미리보기다. 결과 글자와 CER은 실험에서 측정한 값만 보여준다.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ================================================================ 15 한계 -->
-<section class="slide" id="limit" data-part="7" data-steps="3">
-  <h2>한계, 그리고 AI 치팅과의 관계</h2>
-  <div class="split" style="--l:820px">
-    <div class="lim">
-      <div data-at="0"><span class="n">1</span><h3>글자 위치는 찾지 못한다</h3><p>잘라 낸 한 줄만 읽는다. 시험지 한 장을 읽으려면 별도의 텍스트 검출 모델이 앞에 필요하다.</p></div>
-      <div data-at="0"><span class="n">2</span><h3>크고 느리다</h3><p>IAM 2,915문장 기준 Small은 초당 8.37문장, Base는 4.60문장. Base는 334M 파라미터.</p></div>
-      <div data-at="0"><span class="n">3</span><h3>공개 모델은 영어 중심</h3><p>한국어를 읽으려면 한국어 데이터와 토크나이저로 다시 학습해야 한다.</p></div>
-      <div data-at="0"><span class="n">4</span><h3>정답 표기 규칙에 민감</h3><p>장면 글자에서는 정답에 없는 기호를 출력해 오답 처리되는 경우를 논문이 보고한다.</p></div>
-    </div>
-    <div class="stack">
-      <h3 data-at="1">사진 한 장이 풀이가 되기까지</h3>
-      <div class="chain" data-at="1">
-        <div>검출<small>글자 위치 찾기</small></div>
-        <div class="me">인식 · TrOCR<small>이미지 → 글자</small></div>
-        <div class="llm">언어모델<small>문제 이해·풀이</small></div>
-        <div class="llm">답<small>출력</small></div>
-      </div>
-      <div class="ask" data-at="2"><p>TrOCR는 <span class="hl-mark">읽기만</span> 한다. 정답을 추론하는 것은 뒤의 언어모델이다. OCR 성능이 좋아질수록 종이 시험도 쉽게 디지털 입력이 된다는 점이 연결 고리다.</p></div>
-      <p class="sm muted" data-at="2">토론 질문: 시험 문제를 찍는 것만으로 풀이가 나오는 환경에서 평가는 무엇을 측정해야 할까?</p>
-    </div>
-  </div>
-  <p class="foot">속도: Li et al., Table 5 · 장면 글자 오류 사례: 실험 결과 절</p>
-</section>
-
-<!-- ================================================================ 16 결론 -->
-<section class="slide" id="concl" data-steps="2">
+<!-- ================================================================ 20 정리 -->
+<section class="slide" id="concl" data-label="정리" data-steps="4">
   <h2>정리</h2>
-  <svg id="concl-svg" viewBox="0 0 1680 240" style="width:1680px;height:240px" aria-label="이미지에서 텍스트까지 전체 파이프라인 요약"></svg>
-  <div class="take" data-at="1">
-    <div class="panel"><h3>구조</h3><p>CNN·RNN 없이 사전학습된 이미지 Transformer와 텍스트 Transformer만으로 문자 인식을 End-to-End로 해결</p></div>
-    <div class="panel"><h3>학습</h3><p>같은 구조라도 사전학습과 데이터 증강에 따라 SROIE F1이 38.24%에서 95.84%로 달라졌다</p></div>
-    <div class="panel"><h3>범위</h3><p>TrOCR는 잘라 낸 글자를 읽는 모델이다. 검출과 문제 풀이는 다른 모델의 몫이다</p></div>
-  </div>
+  <ol class="sum">
+    <li data-at="0"><h3>문제</h3><p class="sm">기존 OCR은 CNN·RNN·외부 언어모델을 따로 설계하고, 대규모 사전학습 모델을 거의 쓰지 않음</p></li>
+    <li data-at="1"><h3>방법</h3><p class="sm">사전학습 이미지 Transformer + 텍스트 Transformer 인코더-디코더. 2단계 합성 데이터 사전학습 후 Fine-tuning, 교차 엔트로피 학습</p></li>
+    <li data-at="2"><h3>결과</h3><p class="sm">SROIE F1 96.58, IAM CER 2.89 (Large). 사전학습·증강 누적 시 SROIE F1 38.24 → 95.84</p></li>
+    <li data-at="3"><h3>의의</h3><p class="sm">구조 변경 없이 전이학습만으로 인쇄체·손글씨·장면 글자 인식. 검출과 문제 풀이는 별도 모델의 역할</p></li>
+  </ol>
 </section>
 
-<!-- ================================================================ 17 참고문헌 -->
-<section class="slide" id="refs" data-label="참고문헌" data-steps="1">
-  <div class="split" style="--l:1180px">
-    <div class="stack">
-      <h2>참고문헌</h2>
-      <ol class="refs">
-        <li>M. Li et al., “TrOCR: Transformer-Based Optical Character Recognition with Pre-trained Models,” <i>AAAI</i>, 2023. <a href="https://arxiv.org/abs/2109.10282" target="_blank" rel="noopener">arXiv:2109.10282</a></li>
-        <li>Microsoft, unilm/trocr 공식 구현. <a href="https://github.com/microsoft/unilm/tree/master/trocr" target="_blank" rel="noopener">github.com/microsoft/unilm</a></li>
-        <li>microsoft/trocr-small-printed 공개 모델. <a href="https://huggingface.co/microsoft/trocr-small-printed" target="_blank" rel="noopener">huggingface.co</a></li>
-        <li>A. Dosovitskiy et al., “An Image is Worth 16x16 Words,” <i>ICLR</i>, 2021.</li>
-        <li>H. Bao et al., “BEiT: BERT Pre-Training of Image Transformers,” <i>ICLR</i>, 2022.</li>
-        <li>H. Touvron et al., “Training data-efficient image transformers &amp; distillation through attention (DeiT),” <i>ICML</i>, 2021.</li>
-        <li>Y. Liu et al., “RoBERTa: A Robustly Optimized BERT Pretraining Approach,” arXiv, 2019.</li>
-        <li>W. Wang et al., “MiniLM: Deep Self-Attention Distillation,” <i>NeurIPS</i>, 2020.</li>
-        <li>U.-V. Marti, H. Bunke, “The IAM-database,” <i>IJDAR</i>, 2002 · Z. Huang et al., “ICDAR2019 Competition on SROIE,” 2019.</li>
-      </ol>
-    </div>
-    <div class="stack" style="align-self:center;gap:20px">
-      <p class="qa">Q&amp;A</p>
-      <p class="sm muted">감사합니다</p>
+<!-- ================================================================ 21 끝 -->
+<section class="slide s-end" id="thanks" data-label="참고문헌" data-steps="1">
+  <div class="end-text">
+    <h1>감사합니다</h1>
+    <div class="refs">
+      <p>Li, M. et al. TrOCR: Transformer-Based Optical Character Recognition with Pre-trained Models. <i>AAAI</i> 37 (2023). arXiv:2109.10282</p>
+      <p>공식 코드: github.com/microsoft/unilm/tree/master/trocr · 공개 모델: huggingface.co/microsoft/trocr-small-printed</p>
+      <p>Dosovitskiy, A. et al. An Image is Worth 16x16 Words (ViT). <i>ICLR</i> (2021).</p>
+      <p>Bao, H. et al. BEiT: BERT Pre-Training of Image Transformers. <i>ICLR</i> (2022). · Touvron, H. et al. DeiT. <i>ICML</i> (2021).</p>
+      <p>Liu, Y. et al. RoBERTa (2019). · Wang, W. et al. MiniLM. <i>NeurIPS</i> (2020).</p>
+      <p>Marti, U.-V., Bunke, H. The IAM-database. <i>IJDAR</i> (2002). · Huang, Z. et al. ICDAR2019 Competition on SROIE (2019).</p>
+      <p class="muted">자체 실험 코드: github.com/JsonParc/ml_project_two</p>
+      <p class="muted">이후 슬라이드: 질문 대비 부록</p>
     </div>
   </div>
+  <figure><canvas id="cv-end" aria-hidden="true"></canvas></figure>
+</section>
+
+<!-- ================================================================ 부록 A -->
+<section class="slide" id="apx-a" data-label="부록 A" data-steps="1">
+  <h2>OCR과 문제 풀이 AI의 역할</h2>
+  <div class="chain">
+    <div>검출<small>시험지에서 글자 줄 위치 찾기</small></div>
+    <div class="me">인식 · TrOCR<small>한 줄 이미지 → 글자</small></div>
+    <div class="llm">언어모델<small>문제 이해·풀이</small></div>
+    <div class="llm">답<small>출력</small></div>
+  </div>
+  <ul class="dots sm">
+    <li>TrOCR: 이미지 → 글자 변환만 담당. 문제의 정답을 추론하지 않음</li>
+    <li>검출과 풀이는 각각 별도 모델</li>
+    <li>OCR 성능 향상 → 종이 시험지도 쉽게 디지털 텍스트로 입력 가능</li>
+  </ul>
+</section>
+
+<!-- ================================================================ 부록 B -->
+<section class="slide" id="apx-b" data-label="부록 B" data-steps="1">
+  <h2>모델 크기와 추론 속도</h2>
+  <table class="t">
+    <tr><th>모델</th><th>인코더</th><th>디코더</th><th class="num">파라미터</th><th class="num">IAM 전체 시간</th><th class="num">문장/초</th><th class="num">토큰/초</th></tr>
+    <tr><td><b>TrOCR-Small</b></td><td>DeiT-Small</td><td>MiniLM</td><td class="num">62M</td><td class="num">348.4초</td><td class="num">8.37</td><td class="num">89.22</td></tr>
+    <tr><td><b>TrOCR-Base</b></td><td>BEiT-Base</td><td>RoBERTa-Large</td><td class="num">334M</td><td class="num">633.7초</td><td class="num">4.60</td><td class="num">50.43</td></tr>
+    <tr><td><b>TrOCR-Large</b></td><td>BEiT-Large</td><td>RoBERTa-Large</td><td class="num">558M</td><td class="num">666.8초</td><td class="num">4.37</td><td class="num">47.94</td></tr>
+  </table>
+  <p class="sm muted">IAM 테스트 2,915문장 기준. Base와 Large는 속도 차이가 작고 Small은 약 2배 빠름</p>
+  <p class="foot">출처: Li et al., Table 5 (arXiv:2109.10282v5)</p>
 </section>
 
   <footer class="bottom"><a class="scriptref" target="script" href="#"></a><span class="pageno"></span></footer>
@@ -618,27 +734,36 @@ span.D { color: var(--bad); font-weight: 900; }
 
 <script>
 /* ================================================================
-   자체 실험 데이터 — 실험이 끝나면 이 객체만 고치면 된다.
-   placeholder: true 인 동안 13·14번 슬라이드에 "예시값" 표시가 뜬다.
-   samples[].img 에 이미지 경로(예: "img/s1.png")를 넣으면 실제 사진을 보여준다.
-   CER/WER 은 gt 와 결과 문자열로 자동 계산한다.
+   자체 실험 데이터 (18·19번 슬라이드). 실험 결과가 바뀌면 이 객체만 고친다.
+   - 예측 문자열이 null 이면 "미측정"으로 표시 (빈 문자열 ""은 아무것도 읽지 못한 것 = CER 100%)
+   - img: site/ 기준 이미지 경로. 파일이 없으면 같은 조건을 브라우저에서 그린 이미지로 대신 보여줌
+   - CER/WER은 정답과 예측 문자열로 자동 계산 (대소문자·공백·구두점 그대로)
+   Tesseract 값: 실측 (Tesseract 5.5.0, --psm 7, individual_results.csv)
    ================================================================ */
 window.EXP = {
-  placeholder: true,
-  model: "microsoft/trocr-small-printed",
-  baseline: "Tesseract 5",
-  note: "인쇄체 한 줄 이미지 · 탐욕적 디코딩",
+  engines: {
+    tess:  { name: "Tesseract", detail: "Tesseract 5.5.0 (--psm 7)" },
+    trocr: { name: "TrOCR", detail: "microsoft/trocr-small-printed (탐욕적 디코딩)" }
+  },
+  note: "합성 인쇄체 한 줄 이미지 8장 · 대소문자·공백·구두점 그대로 비교",
   samples: [
-    { kind: "깨끗한 인쇄체", gt: "TOTAL 12.50",           trocr: "TOTAL 12.50",           base: "TOTAL 12.50" },
-    { kind: "영수증 촬영",   gt: "CASH CHANGE 7.50",      trocr: "CASH CHANGE 7.50",      base: "CASH CHANGF 7.5O", noise: 25 },
-    { kind: "흐린 사진",     gt: "Reading text from pixels", trocr: "Reading text from pixel", base: "Readinq text frorn pixels", blur: 2.2 },
-    { kind: "기울어진 촬영", gt: "Invoice No. 4821",      trocr: "Invoice No. 4821",      base: "lnvoice No 482l", rotate: 8 }
+    { id: "s01", kind: "영수증 합계",     gt: "TOTAL 12.50",              tess: "TOTAL 12.50",              trocr: null },
+    { id: "s02", kind: "잡음 영수증",     gt: "CASH CHANGE 7.50",         tess: "CASH CHANGE 7.50",         trocr: null, noise: 25 },
+    { id: "s03", kind: "기울어진 청구서", gt: "Invoice No. 4821",         tess: "invoice No. 4821",         trocr: null, rotate: 7 },
+    { id: "s04", kind: "흐릿한 문장",     gt: "Reading text from pixels", tess: "Reading text from pixels", trocr: null, blur: 2.2 },
+    { id: "s05", kind: "잡음 안내문",     gt: "PLEASE KEEP YOUR RECEIPT", tess: "PLEASE KEEP YOUR RECEIPT", trocr: null, noise: 45 },
+    { id: "s06", kind: "회전 상품 번호",  gt: "ORDER 2026-11-25",         tess: "over sero?",               trocr: null, rotate: 15 },
+    { id: "s07", kind: "흐릿한 혼합문",   gt: "The Quick Brown Fox",      tess: "The Quick Brown Fox",      trocr: null, blur: 3.2 },
+    { id: "s08", kind: "강한 잡음",       gt: "DATA MATRIX 3.14",         tess: "",                         trocr: null, noise: 60 }
   ],
   degrade: {
     text: "TOTAL 12.50",
-    blur:   { name: "흐림", unit: "px", levels: [0, 1, 2, 3, 4],      pred: ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.5O", "TOTAI 1Z.5O"] },
-    rotate: { name: "회전", unit: "°",  levels: [0, 5, 10, 15, 20],   pred: ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 1250"] },
-    noise:  { name: "잡음", unit: "σ",  levels: [0, 15, 30, 45, 60],  pred: ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.58", "T0TAL 12.58"] }
+    blur:   { name: "흐림", unit: "px", levels: [0, 1, 2, 3, 4],
+              tess:  ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50"], trocr: [null, null, null, null, null] },
+    rotate: { name: "회전", unit: "°", levels: [0, 5, 10, 15, 20],
+              tess:  ["TOTAL 12.50", "TOTAL 12 .50", "TOTAL 12.50", "ott 3? as", "or 28"], trocr: [null, null, null, null, null] },
+    noise:  { name: "잡음", unit: "σ", levels: [0, 15, 30, 45, 60],
+              tess:  ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", ""], trocr: [null, null, null, null, null] }
   }
 };
 </script>
@@ -650,6 +775,7 @@ window.EXP = {
   const deck = document.getElementById("deck");
   const slides = Array.from(deck.querySelectorAll(".slide"));
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = (id) => document.getElementById(id);
   const mods = {};
   const C = {};
   const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -659,12 +785,14 @@ window.EXP = {
   const ease = (t) => 1 - Math.pow(1 - t, 3);
   const lerp = (a, b, t) => a + (b - a) * t;
   function rng(seed) { return function () { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
-  function setup(cv, w, h) { const r = 2; cv.width = w * r; cv.height = h * r; cv.style.width = w + "px"; cv.style.height = h + "px"; const x = cv.getContext("2d"); x.setTransform(r, 0, 0, r, 0, 0); return x; }
+  function setup(cv, w, h, k) { k = k || 1; const r = 2; cv.width = w * k * r; cv.height = h * k * r; cv.style.width = w * k + "px"; cv.style.height = h * k + "px"; const x = cv.getContext("2d"); x.setTransform(r * k, 0, 0, r * k, 0, 0); return x; }
   function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
   function txt(parent, x, y, s, attrs) { const t = el("text", Object.assign({ x, y, class: "ct" }, attrs || {}), parent); t.textContent = s; return t; }
-  function svgIn(id, w, h) { const host = document.getElementById(id); host.innerHTML = ""; return el("svg", { viewBox: `0 0 ${w} ${h}`, width: w, height: h, style: "display:block;max-width:100%" }, host); }
+  function svgIn(id, w, h) { const host = $(id); host.innerHTML = ""; return el("svg", { viewBox: `0 0 ${w} ${h}`, width: w, height: h, style: "display:block;max-width:100%" }, host); }
   function arrowDefs(svg) { const d = el("defs", {}, svg); const m = el("marker", { id: svg.id + "-ah", viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto" }, d); el("path", { d: "M0,0 L10,5 L0,10 z", class: "ah" }, m); return `url(#${svg.id}-ah)`; }
-  function esc(s) { return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+  function rr(x, X, Y, W, H, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + W, Y, X + W, Y + H, r); x.arcTo(X + W, Y + H, X, Y + H, r); x.arcTo(X, Y + H, X, Y, r); x.arcTo(X, Y, X + W, Y, r); x.closePath(); }
+  const FONT = '"Pretendard Variable", "Noto Sans KR", sans-serif';
 
   /* ------------------------------------------------------------ 편집 거리 정렬 */
   function align(a, b) {
@@ -685,13 +813,13 @@ window.EXP = {
   }
   const words = (s) => s.trim().split(/\s+/).filter(Boolean);
   const cer = (g, p) => { const r = align([...g], [...p]); return r.n ? r.dist / r.n : 0; };
-  const wer = (g, p) => { const r = align(words(g), words(p)); return r.n ? r.dist / r.n : 0; };
   const fmtPct = (v) => (v * 100).toFixed(1) + "%";
   function diffHTML(g, p) {
+    if (p === "") return '<span class="na">(인식 결과 없음)</span>';
     return align([...g], [...p]).ops.map((o) => o.op === "=" ? esc(o.b) : o.op === "S" ? `<mark class="S">${esc(o.b)}</mark>` : o.op === "I" ? `<mark class="I">${esc(o.b)}</mark>` : `<span class="D" title="빠진 글자 ${esc(o.a)}">‸</span>`).join("");
   }
 
-  /* ------------------------------------------------------------ 글자 이미지 만들기 (사진처럼 보이는 캔버스) */
+  /* ------------------------------------------------------------ 글자 이미지 (사진처럼 보이는 캔버스) */
   const LINE = "Reading text from pixels";
   const HAND = '700 {s}px Caveat, "Segoe Print", "Comic Sans MS", cursive';
   function fitFont(x, text, tpl, maxW, maxS) { let s = maxS; x.font = tpl.replace("{s}", s); const w = x.measureText(text).width; if (w > maxW) { s = Math.floor(maxS * maxW / w); x.font = tpl.replace("{s}", s); } return s; }
@@ -699,14 +827,13 @@ window.EXP = {
     o = o || {};
     const W = o.w || 1152, H = o.h || 160, c = document.createElement("canvas"); c.width = W; c.height = H;
     const x = c.getContext("2d"), R = rng(o.seed || 7);
-    const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, o.bg0 || "#EEEAE2"); g.addColorStop(1, o.bg1 || "#DCD7CC");
+    const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, "#EEEAE2"); g.addColorStop(1, "#DCD7CC");
     x.fillStyle = g; x.fillRect(0, 0, W, H);
-    const tpl = o.font || HAND;
-    fitFont(x, text, tpl, W - 80, o.size || 112);
-    x.fillStyle = o.ink || "#1E2740"; x.textBaseline = "middle";
-    x.save(); x.translate(40, H / 2 + (o.dy || 6)); if (o.skew !== false) x.transform(1, 0, -0.06, 1, 0, 0); x.fillText(text, 0, 0); x.restore();
-    const im = x.getImageData(0, 0, W, H), d = im.data, amp = o.grain ?? 22;
-    for (let i = 0; i < d.length; i += 4) { const n = (R() - 0.5) * amp; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
+    fitFont(x, text, HAND, W - 80, 112);
+    x.fillStyle = "#1E2740"; x.textBaseline = "middle";
+    x.save(); x.translate(40, H / 2 + 6); x.transform(1, 0, -0.06, 1, 0, 0); x.fillText(text, 0, 0); x.restore();
+    const im = x.getImageData(0, 0, W, H), d = im.data;
+    for (let i = 0; i < d.length; i += 4) { const n = (R() - 0.5) * 22; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
     x.putImageData(im, 0, 0);
     c.font = x.font;
     return c;
@@ -718,19 +845,16 @@ window.EXP = {
     sqCv.getContext("2d").drawImage(lineCv, 0, 0, 384, 384);
   }
 
-  /* ================================================================ 1 표지 애니메이션 */
-  mods.cover = (function () {
-    const cv = document.getElementById("cv-cover"); const x = setup(cv, 820, 700);
-    const OUT = LINE;
-    function frame(t) {
+  /* ================================================================ 표지·마지막 장 애니메이션 */
+  function makeCover(cv, k) {
+    const x = setup(cv, 820, 700, k);
+    return { frame(t) {
       x.clearRect(0, 0, 820, 700);
-      const P = 9000, ph = reduce ? 0.8 : (t % P) / P;
-      // 사진 카드
+      const ph = reduce ? 0.8 : (t % 9000) / 9000;
       x.save(); x.translate(410, 150); x.rotate(-0.045);
       x.shadowColor = "rgba(0,0,0,.25)"; x.shadowBlur = 30; x.shadowOffsetY = 12;
       const iw = 760, ih = iw * 160 / 1152;
       x.drawImage(lineCv, -iw / 2, -ih / 2, iw, ih); x.shadowColor = "transparent";
-      // 스캔 + 패치 격자
       const sp = clamp(ph / 0.42), sx = -iw / 2 + iw * ease(sp);
       const cols = 36, rows = 6, cw = iw / cols, rh = ih / rows;
       x.lineWidth = 1.2;
@@ -742,105 +866,101 @@ window.EXP = {
       }
       if (sp < 1) { x.fillStyle = "rgba(255,196,33,.35)"; x.fillRect(sx - 6, -ih / 2 - 10, 12, ih + 20); }
       x.restore();
-      // 흐름: 패치 → 인코더 → 디코더
       const yb = 300;
-      const boxes = [{ x: 60, w: 300, l: "Image Transformer", s: "Encoder", c: C.enc, f: C["enc-soft"] }, { x: 460, w: 300, l: "Text Transformer", s: "Decoder", c: C.dec, f: C["dec-soft"] }];
-      boxes.forEach((b, i) => {
-        const act = i === 0 ? ph > 0.15 && ph < 0.6 : ph > 0.35 && ph < 0.88;
-        x.fillStyle = b.f; x.strokeStyle = b.c; x.lineWidth = act ? 4 : 2;
-        rr(x, b.x, yb, b.w, 120, 18); x.fill(); x.stroke();
-        x.fillStyle = C.ink; x.font = '800 30px "Pretendard Variable", "Noto Sans KR", sans-serif'; x.textAlign = "center";
-        x.fillText(b.s, b.x + b.w / 2, yb + 56); x.font = '600 20px "Pretendard Variable", "Noto Sans KR", sans-serif'; x.fillStyle = C.sub; x.fillText(b.l, b.x + b.w / 2, yb + 88);
+      [{ x: 60, l: "Image Transformer", s: "인코더", c: C.enc, f: C["enc-soft"], on: ph > 0.15 && ph < 0.6 },
+       { x: 460, l: "Text Transformer", s: "디코더", c: C.dec, f: C["dec-soft"], on: ph > 0.35 && ph < 0.88 }].forEach((b) => {
+        x.fillStyle = b.f; x.strokeStyle = b.c; x.lineWidth = b.on ? 4 : 2;
+        rr(x, b.x, yb, 300, 120, 18); x.fill(); x.stroke();
+        x.textAlign = "center"; x.fillStyle = C.ink; x.font = `800 30px ${FONT}`; x.fillText(b.s, b.x + 150, yb + 56);
+        x.font = `600 20px ${FONT}`; x.fillStyle = C.sub; x.fillText(b.l, b.x + 150, yb + 88);
       });
       x.textAlign = "left";
-      // 패킷
       x.fillStyle = C.hl;
-      for (let k = 0; k < 6; k++) {
-        const q = ((t / 1400) + k / 6) % 1;
-        if (reduce) break;
-        let px, py;
-        if (q < 0.33) { px = lerp(210, 210, q); py = lerp(220, yb, q / 0.33); }
+      if (!reduce) for (let q0 = 0; q0 < 6; q0++) {
+        const q = ((t / 1400) + q0 / 6) % 1; let px, py;
+        if (q < 0.33) { px = 210; py = lerp(220, yb, q / 0.33); }
         else if (q < 0.66) { px = lerp(360, 460, (q - 0.33) / 0.33); py = yb + 60; }
         else { px = 610; py = lerp(yb + 120, 500, (q - 0.66) / 0.34); }
         x.beginPath(); x.arc(px, py, 6, 0, 7); x.fill();
       }
-      // 출력 텍스트 타이핑
-      const tp = clamp((ph - 0.38) / 0.42), n = Math.floor(tp * OUT.length);
+      const tp = clamp((ph - 0.38) / 0.42), n = Math.floor(tp * LINE.length);
       x.fillStyle = C.tint; rr(x, 40, 520, 740, 110, 18); x.fill();
       x.font = '700 40px "JetBrains Mono", Consolas, monospace'; x.fillStyle = C.ink;
-      const shown = OUT.slice(0, n); x.fillText(shown, 70, 588);
+      const shown = LINE.slice(0, n); x.fillText(shown, 70, 588);
       const w = x.measureText(shown).width;
       if (Math.floor(t / 450) % 2 === 0 || reduce) { x.fillStyle = C.dec; x.fillRect(74 + w, 556, 4, 42); }
-      x.font = '700 18px "Pretendard Variable", "Noto Sans KR", sans-serif'; x.fillStyle = C.mid; x.fillText("출력 텍스트", 56, 512);
-    }
-    return { frame };
-  })();
-  function rr(x, X, Y, W, H, r) { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + W, Y, X + W, Y + H, r); x.arcTo(X + W, Y + H, X, Y + H, r); x.arcTo(X, Y + H, X, Y, r); x.arcTo(X, Y, X + W, Y, r); x.closePath(); }
+      x.font = `700 18px ${FONT}`; x.fillStyle = C.mid; x.fillText("출력 텍스트", 56, 512);
+    } };
+  }
 
-  /* ================================================================ 2 실생활 파이프라인 */
-  function buildUse() {
-    const svg = document.getElementById("use-svg"); svg.innerHTML = ""; const ah = arrowDefs(svg);
-    const xs = [150, 500, 850, 1200, 1530], y = 160, w = 240, h = 150;
-    const g1 = el("g", { "data-at": 0 }, svg), g2 = el("g", { "data-at": 2 }, svg);
-    const names = ["촬영", "글자 이미지", "텍스트", "언어모델", "풀이 · 응용"];
+  /* ================================================================ 4 배경 */
+  function buildBg() {
+    const svg = $("bg-svg"); svg.innerHTML = ""; const ah = arrowDefs(svg);
+    const xs = [150, 500, 850, 1200, 1530], y = 130, w = 240, h = 130;
+    const names = ["사진", "텍스트 검출", "텍스트 인식", "텍스트", "언어모델 (풀이)"];
+    const g = el("g", { "data-at": 0 }, svg);
     xs.forEach((cx, i) => {
-      const g = i < 3 ? g1 : g2;
-      el("rect", { x: cx - w / 2, y: y - h / 2, width: w, height: h, rx: 22, class: "box " + (i === 1 || i === 2 ? "enc" : "plain"), "stroke-dasharray": i >= 3 ? "10 8" : "" }, g);
-      txt(g, cx, y + h / 2 + 40, names[i], { "text-anchor": "middle", class: "ct big" });
-      if (i === 0) { el("rect", { x: cx - 50, y: y - 32, width: 100, height: 68, rx: 12, fill: "none", stroke: C.ink, "stroke-width": 5, class: "ico" }, g); el("circle", { cx, cy: y + 2, r: 20, fill: "none", stroke: C.ink, "stroke-width": 5, class: "ico" }, g); el("rect", { x: cx - 22, y: y - 44, width: 32, height: 14, rx: 4, fill: C.ink, class: "icof" }, g); }
-      if (i === 1) { const im = el("image", { x: cx - 100, y: y - 14, width: 200, height: 28, preserveAspectRatio: "none", id: "use-img" }, g); im.setAttribute("href", lineCv.toDataURL()); }
-      if (i === 2) txt(g, cx, y + 12, "Reading text…", { "text-anchor": "middle", class: "ct ink", style: "font:700 26px var(--mono)" });
-      if (i === 3) txt(g, cx, y + 12, "LLM", { "text-anchor": "middle", class: "ct", style: "font:800 40px var(--font)" });
-      if (i === 4) txt(g, cx, y + 12, "x = 3", { "text-anchor": "middle", class: "ct", style: "font:700 32px var(--mono)" });
+      el("rect", { x: cx - w / 2, y: y - h / 2, width: w, height: h, rx: 20, class: "box " + (i === 2 ? "enc" : "plain"), "stroke-dasharray": i === 4 ? "10 8" : "" }, g);
+      txt(g, cx, y + h / 2 + 38, names[i], { "text-anchor": "middle", class: "ct big", style: i === 4 ? "fill:var(--mid)" : "" });
+      if (i === 0) { el("rect", { x: cx - 50, y: y - 30, width: 100, height: 66, rx: 12, fill: "none", stroke: C.ink, "stroke-width": 5 }, g); el("circle", { cx, cy: y + 3, r: 19, fill: "none", stroke: C.ink, "stroke-width": 5 }, g); el("rect", { x: cx - 22, y: y - 42, width: 32, height: 14, rx: 4, fill: C.ink }, g); }
+      if (i === 1) { el("rect", { x: cx - 62, y: y - 48, width: 124, height: 96, rx: 6, fill: C.paper, stroke: C.faint, "stroke-width": 2 }, g); [0, 1, 2].forEach((k) => el("rect", { x: cx - 50, y: y - 36 + k * 26, width: 100 - k * 22, height: 17, fill: "none", stroke: C.dec, "stroke-width": 2.5, "stroke-dasharray": "5 3" }, g)); }
+      if (i === 2) { const im = el("image", { x: cx - 100, y: y - 14, width: 200, height: 28, preserveAspectRatio: "none" }, g); im.setAttribute("href", lineCv.toDataURL()); }
+      if (i === 3) txt(g, cx, y + 10, "Reading text…", { "text-anchor": "middle", class: "ct ink", style: "font:700 24px var(--mono)" });
+      if (i === 4) txt(g, cx, y + 13, "LLM", { "text-anchor": "middle", class: "ct", style: "font:800 38px var(--font);fill:var(--mid)" });
       if (i < 4) {
-        const path = el("path", { d: `M${cx + w / 2 + 8},${y} L${xs[i + 1] - w / 2 - 12},${y}`, class: "arrow", "marker-end": ah, "stroke-dasharray": i >= 2 ? "8 7" : "" }, i < 2 ? g1 : g2);
-        if (!reduce && i < 2) { const c = el("circle", { r: 8, fill: C.hl, class: "packet" }, g1); const am = el("animateMotion", { dur: "1.6s", repeatCount: "indefinite", path: `M${cx + w / 2 + 8},${y} L${xs[i + 1] - w / 2 - 12},${y}` }, c); }
+        el("path", { d: `M${cx + w / 2 + 8},${y} L${xs[i + 1] - w / 2 - 12},${y}`, class: "arrow", "marker-end": ah, "stroke-dasharray": i === 3 ? "8 7" : "" }, g);
+        if (!reduce && i < 3) { const c = el("circle", { r: 8, fill: C.hl, class: "packet" }, g); el("animateMotion", { dur: "1.6s", repeatCount: "indefinite", path: `M${cx + w / 2 + 8},${y} L${xs[i + 1] - w / 2 - 12},${y}` }, c); }
       }
     });
-    // 범위 괄호
-    const b = el("g", { "data-at": 2 }, svg);
-    el("path", { d: `M${xs[1] - w / 2},72 V54 H${xs[2] + w / 2} V72`, fill: "none", stroke: C.enc, "stroke-width": 4 }, b);
-    txt(b, (xs[1] + xs[2]) / 2, 38, "TrOCR가 하는 일", { "text-anchor": "middle", class: "ct enc", style: "font-weight:800;font-size:24px" });
-    el("path", { d: `M${xs[3] - w / 2},72 V54 H${xs[4] + w / 2} V72`, fill: "none", stroke: C.faint, "stroke-width": 4, "stroke-dasharray": "8 7" }, b);
-    txt(b, (xs[3] + xs[4]) / 2, 38, "TrOCR 범위 밖", { "text-anchor": "middle", class: "ct", style: "font-weight:800;font-size:24px" });
+    const b = el("g", { "data-at": 1 }, svg);
+    el("path", { d: `M${xs[2] - w / 2},62 V46 H${xs[2] + w / 2} V62`, fill: "none", stroke: C.enc, "stroke-width": 4 }, b);
+    txt(b, xs[2], 32, "TrOCR가 다루는 범위", { "text-anchor": "middle", class: "ct enc", style: "font-weight:800;font-size:23px" });
   }
 
-  /* ================================================================ 4 기존 OCR */
-  function buildOld() {
-    const svg = document.getElementById("old-svg"); svg.innerHTML = ""; const ah = arrowDefs(svg);
-    const xs = [190, 630, 1070, 1500], w = 330, h = 150, y = 30;
-    const L = [["CNN", "이미지 특징"], ["RNN", "문맥 처리"], ["CTC", "문자 단위 출력"], ["외부 언어모델", "후처리 보정"]];
+  /* ================================================================ 5 기존 방법과 비교 */
+  function buildCmp() {
+    const svg = $("cmp-svg"); svg.innerHTML = ""; const ah = arrowDefs(svg);
+    const g0 = el("g", { "data-at": 0 }, svg);
+    txt(g0, 0, 84, "기존", { class: "ct big" });
+    const xs = [285, 675, 1065, 1455], L = [["CNN", "이미지 특징"], ["RNN", "문맥 처리"], ["CTC", "글자열 출력"], ["외부 언어모델", "후처리 보정"]];
     xs.forEach((cx, i) => {
-      const g = el("g", { "data-at": i }, svg);
-      el("rect", { x: cx - w / 2, y, width: w, height: h, rx: 20, class: "box" + (i === 3 ? " plain" : ""), "stroke-dasharray": i === 3 ? "10 8" : "" }, g);
-      txt(g, cx, y + 68, L[i][0], { "text-anchor": "middle", class: "ct big" });
-      txt(g, cx, y + 106, L[i][1], { "text-anchor": "middle" });
-      if (i > 0) el("path", { d: `M${xs[i - 1] + w / 2 + 6},${y + h / 2} L${cx - w / 2 - 10},${y + h / 2}`, class: "arrow draw", pathLength: 1, "marker-end": ah }, g);
+      el("rect", { x: cx - 165, y: 20, width: 330, height: 110, rx: 18, class: "box" + (i === 3 ? " plain" : ""), "stroke-dasharray": i === 3 ? "10 8" : "" }, g0);
+      txt(g0, cx, 68, L[i][0], { "text-anchor": "middle", class: "ct big" });
+      txt(g0, cx, 104, L[i][1], { "text-anchor": "middle" });
+      if (i > 0) el("path", { d: `M${xs[i - 1] + 171},75 L${cx - 175},75`, class: "arrow", "marker-end": ah }, g0);
     });
+    const g1 = el("g", { "data-at": 1 }, svg);
+    txt(g1, 0, 234, "TrOCR", { class: "ct big" });
+    el("rect", { x: 120, y: 170, width: 720, height: 110, rx: 18, class: "box enc" }, g1);
+    txt(g1, 480, 218, "Image Transformer (인코더)", { "text-anchor": "middle", class: "ct big" });
+    txt(g1, 480, 254, "BEiT·DeiT로 초기화, 16×16 패치 입력", { "text-anchor": "middle" });
+    el("path", { d: "M846,225 L890,225", class: "arrow", "marker-end": ah }, g1);
+    el("rect", { x: 900, y: 170, width: 720, height: 110, rx: 18, class: "box dec" }, g1);
+    txt(g1, 1260, 218, "Text Transformer (디코더)", { "text-anchor": "middle", class: "ct big" });
+    txt(g1, 1260, 254, "RoBERTa·MiniLM으로 초기화, wordpiece 순차 생성", { "text-anchor": "middle" });
   }
 
-  /* ================================================================ 5 Table 1 막대 */
-  function buildNovel() {
-    const W = 680, H = 360, svg = svgIn("novel-chart", W, H);
+  /* ================================================================ 10 인코더 비교 막대 (Table 1) */
+  function buildWhy() {
+    const W = 680, H = 360, svg = svgIn("why-chart", W, H);
     const encs = ["ResNet50 (CNN)", "DeiT-Base", "BEiT-Base"], base = [67.02, 69.17, 76.31], large = [71.83, 76.78, 79.36];
     const m = { l: 190, r: 70, t: 10 }, X = (v) => m.l + ((v - 50) / 40) * (W - m.l - m.r);
     [50, 60, 70, 80, 90].forEach((v) => { el("line", { x1: X(v), x2: X(v), y1: m.t, y2: 290, class: "grid" }, svg); txt(svg, X(v), 316, v, { "text-anchor": "middle", class: "ct small" }); });
     encs.forEach((e, i) => {
       const y0 = m.t + 10 + i * 92;
       txt(svg, m.l - 14, y0 + 40, e, { "text-anchor": "end", class: "ct ink", style: "font-weight:800" });
-      [[base[i], C.faint, "RoBERTa-Base"], [large[i], i === 2 ? C.enc : C.mid, "RoBERTa-Large"]].forEach(([v, col], k) => {
+      [[base[i], C.faint], [large[i], i === 2 ? C.enc : C.mid]].forEach(([v, col], k) => {
         const r = el("rect", { x: X(50), y: y0 + k * 36, width: X(v) - X(50), height: 30, rx: 5, fill: col, class: "bar-h" }, svg); r.style.setProperty("--d", (i * 0.15 + k * 0.08) + "s");
         txt(svg, X(v) + 8, y0 + k * 36 + 23, v.toFixed(2), { class: "ct small ink", style: "font-weight:800" });
       });
     });
-    const lg = el("g", {}, svg);
-    el("rect", { x: m.l, y: 334, width: 18, height: 18, fill: C.faint, rx: 3 }, lg); txt(lg, m.l + 26, 350, "디코더 RoBERTa-Base", { class: "ct small" });
-    el("rect", { x: m.l + 250, y: 334, width: 18, height: 18, fill: C.mid, rx: 3 }, lg); txt(lg, m.l + 276, 350, "디코더 RoBERTa-Large", { class: "ct small" });
+    el("rect", { x: m.l, y: 334, width: 18, height: 18, fill: C.faint, rx: 3 }, svg); txt(svg, m.l + 26, 350, "디코더 RoBERTa-Base", { class: "ct small" });
+    el("rect", { x: m.l + 250, y: 334, width: 18, height: 18, fill: C.mid, rx: 3 }, svg); txt(svg, m.l + 276, 350, "디코더 RoBERTa-Large", { class: "ct small" });
   }
 
-  /* ================================================================ 6 전체 구조 */
+  /* ================================================================ 7 TrOCR 구조 */
   function buildArch() {
-    const svg = document.getElementById("arch-svg"); svg.innerHTML = ""; const ah = arrowDefs(svg);
+    const svg = $("arch-svg"); svg.innerHTML = ""; const ah = arrowDefs(svg);
     const cy = 230;
     const g0 = el("g", { "data-at": 0 }, svg);
     txt(g0, 0, cy - 40, "입력 이미지", { class: "ct ink", style: "font-weight:800" });
@@ -850,31 +970,27 @@ window.EXP = {
     for (let i = 1; i < 24; i++) { const p = 390 + i * 280 / 24, q = cy - 140 + i * 280 / 24; el("line", { x1: p, x2: p, y1: cy - 140, y2: cy + 140, stroke: C.enc, "stroke-opacity": .55, "stroke-width": 1 }, g0); el("line", { x1: 390, x2: 670, y1: q, y2: q, stroke: C.enc, "stroke-opacity": .55, "stroke-width": 1 }, g0); }
     txt(g0, 530, cy + 178, "384×384 · 패치 576개", { "text-anchor": "middle", class: "ct" });
     el("path", { d: `M678,${cy} L742,${cy}`, class: "arrow", "marker-end": ah }, g0);
-    // encoder
     const g1 = el("g", { "data-at": 1 }, svg);
     el("rect", { x: 750, y: cy - 180, width: 300, height: 360, rx: 24, class: "box enc" }, g1);
-    txt(g1, 900, cy - 130, "Encoder", { "text-anchor": "middle", class: "ct big" });
+    txt(g1, 900, cy - 130, "인코더", { "text-anchor": "middle", class: "ct big" });
     txt(g1, 900, cy - 100, "Image Transformer", { "text-anchor": "middle", class: "ct small" });
     ["Multi-Head Self-Attention", "Feed Forward"].forEach((s, i) => { el("rect", { x: 775, y: cy - 70 + i * 74, width: 250, height: 58, rx: 10, class: "layer" }, g1); txt(g1, 900, cy - 34 + i * 74, s, { "text-anchor": "middle", class: "ct small ink" }); });
     txt(g1, 900, cy + 104, "× L 층", { "text-anchor": "middle", class: "ct enc", style: "font-weight:800" });
     txt(g1, 900, cy + 158, "BEiT / DeiT로 초기화", { "text-anchor": "middle", class: "ct small enc", style: "font-weight:800" });
     for (let k = 0; k < 6; k++) el("rect", { x: 1068, y: cy - 75 + k * 26, width: 44, height: 18, rx: 4, fill: C.enc, opacity: 0.25 + k * 0.12 }, g1);
-    // decoder
     const g2 = el("g", { "data-at": 2 }, svg);
     el("path", { d: `M1118,${cy} L1142,${cy}`, class: "arrow", "marker-end": ah }, g2);
     txt(g2, 1100, cy - 92, "Cross-Attn", { "text-anchor": "middle", class: "ct small", style: "font-weight:800;font-size:16px" });
     el("rect", { x: 1150, y: cy - 180, width: 300, height: 360, rx: 24, class: "box dec" }, g2);
-    txt(g2, 1300, cy - 130, "Decoder", { "text-anchor": "middle", class: "ct big" });
+    txt(g2, 1300, cy - 130, "디코더", { "text-anchor": "middle", class: "ct big" });
     txt(g2, 1300, cy - 100, "Text Transformer", { "text-anchor": "middle", class: "ct small" });
     ["Masked Self-Attention", "Cross-Attention", "Feed Forward"].forEach((s, i) => { el("rect", { x: 1175, y: cy - 76 + i * 64, width: 250, height: 50, rx: 10, class: "layer" }, g2); txt(g2, 1300, cy - 44 + i * 64, s, { "text-anchor": "middle", class: "ct small ink" }); });
     txt(g2, 1300, cy + 128, "× L 층", { "text-anchor": "middle", class: "ct dec", style: "font-weight:800" });
     txt(g2, 1300, cy + 162, "RoBERTa / MiniLM으로 초기화", { "text-anchor": "middle", class: "ct small dec", style: "font-weight:800" });
-    // output
     const g3 = el("g", { "data-at": 3 }, svg);
     el("path", { d: `M1458,${cy} L1490,${cy}`, class: "arrow", "marker-end": ah }, g3);
-    const toks = ["Reading", "␣text", "␣from", "␣pix", "els", "[EOS]"];
-    toks.forEach((s, i) => {
-      const g = el("g", { class: "otok" }, g3); g.style.animation = `fadein .4s ${0.3 + i * 0.35}s both`;
+    ["Reading", "␣text", "␣from", "␣pix", "els", "[EOS]"].forEach((s, i) => {
+      const g = el("g", {}, g3); g.style.animation = `fadein .4s ${0.3 + i * 0.35}s both`;
       el("rect", { x: 1500, y: cy - 165 + i * 56, width: 180, height: 46, rx: 10, fill: i === 5 ? C.tint : C["dec-soft"], stroke: i === 5 ? C.faint : C.dec, "stroke-width": 2 }, g);
       txt(g, 1590, cy - 134 + i * 56, s, { "text-anchor": "middle", class: "ct ink", style: "font:700 22px var(--mono)" });
     });
@@ -886,13 +1002,13 @@ window.EXP = {
     }
   }
 
-  /* ================================================================ 7 Encoder 캔버스 */
+  /* ================================================================ 8 인코더 캔버스 */
   mods.encoder = (function () {
-    const cv = document.getElementById("cv-enc"); const x = setup(cv, 1000, 700);
+    const x = setup($("cv-enc"), 1000, 700);
     let k = 0, t0 = 0;
     const WR = { x: 20, y: 16, w: 960, h: 133 }, SQ = { x: 40, y: 176, w: 360, h: 360 }, cell = 360 / 24, ROW = 12;
     const TX = 84, TY = 606, TS = 34, TG = 37;
-    function label(s, X, Y, size, col, weight) { x.font = `${weight || 700} ${size}px "Pretendard Variable", "Noto Sans KR", sans-serif`; x.fillStyle = col; x.fillText(s, X, Y); }
+    function label(s, X, Y, size, col, weight) { x.font = `${weight || 700} ${size}px ${FONT}`; x.fillStyle = col; x.fillText(s, X, Y); }
     function frame(t) {
       x.clearRect(0, 0, 1000, 700);
       const p = reduce ? 1 : ease(clamp((t - t0) / 1200));
@@ -902,7 +1018,7 @@ window.EXP = {
         const q = P(1), r = { x: lerp(WR.x, SQ.x, q), y: lerp(WR.y, SQ.y, q), w: lerp(WR.w, SQ.w, q), h: lerp(WR.h, SQ.h, q) };
         x.globalAlpha = 0.4 + 0.6 * q; x.drawImage(lineCv, r.x, r.y, r.w, r.h); x.globalAlpha = 1;
         x.strokeStyle = C.faint; x.lineWidth = 2; x.strokeRect(r.x, r.y, r.w, r.h);
-        if (q > 0.6 && k < 4) { x.globalAlpha = clamp((q - 0.6) / 0.4); label("384 × 384", SQ.x + SQ.w + 44, SQ.y + 50, 44, C.ink, 800); label("가로세로 비율 무시하고 늘림", SQ.x + SQ.w + 44, SQ.y + 88, 22, C.sub); x.globalAlpha = 1; }
+        if (q > 0.6 && k < 4) { x.globalAlpha = clamp((q - 0.6) / 0.4); label("384 × 384", SQ.x + SQ.w + 44, SQ.y + 50, 44, C.ink, 800); label("가로세로 비율 무시하고 변환", SQ.x + SQ.w + 44, SQ.y + 88, 22, C.sub); x.globalAlpha = 1; }
       }
       if (k >= 2) {
         const q = P(2); x.strokeStyle = C.enc; x.lineWidth = 1.2; x.globalAlpha = 0.85;
@@ -917,31 +1033,27 @@ window.EXP = {
       if (k >= 3) {
         const q = P(3);
         x.fillStyle = "rgba(255,196,33,.38)"; x.fillRect(SQ.x, SQ.y + ROW * cell, SQ.w, cell);
-        // [CLS]
         x.globalAlpha = clamp(q * 3); x.fillStyle = C.enc; rr(x, TX - 64, TY, 56, TS, 6); x.fill();
         label("CLS", TX - 58, TY + 23, 16, C.paper, 800); x.globalAlpha = 1;
         for (let c = 0; c < 24; c++) {
           const lq = ease(clamp(q * 1.8 - c * 0.032));
-          const fx = SQ.x + c * cell, fy = SQ.y + ROW * cell;
-          const dx = lerp(fx, TX + c * TG, lq), dy = lerp(fy, TY, lq), ds = lerp(cell, TS, lq);
+          const dx = lerp(SQ.x + c * cell, TX + c * TG, lq), dy = lerp(SQ.y + ROW * cell, TY, lq), ds = lerp(cell, TS, lq);
           x.drawImage(sqCv, c * 16, ROW * 16, 16, 16, dx, dy, ds, ds);
           x.strokeStyle = C.enc; x.lineWidth = 1.5; x.strokeRect(dx, dy, ds, ds);
           if (lq > 0.98) { x.font = '700 13px "JetBrains Mono", monospace'; x.fillStyle = C.mid; x.textAlign = "center"; x.fillText(String(ROW * 24 + c + 1), TX + c * TG + TS / 2, TY + TS + 20); x.textAlign = "left"; }
         }
         if (q > 0.9) { x.font = '700 13px "JetBrains Mono", monospace'; x.fillStyle = C.mid; x.textAlign = "center"; x.fillText("0", TX - 36, TY + TS + 20); x.textAlign = "left"; }
-        if (k < 4) { x.globalAlpha = clamp((q - 0.5) * 2); label("13번째 줄의 패치 24개를 펼친 모습", SQ.x + SQ.w + 44, SQ.y + 300, 22, C.ink, 800); label("전체는 패치 576개 + [CLS] → 벡터 577개", SQ.x + SQ.w + 44, SQ.y + 332, 22, C.sub); x.globalAlpha = 1; }
+        if (k < 4) { x.globalAlpha = clamp((q - 0.5) * 2); label("13번째 줄의 패치 24개", SQ.x + SQ.w + 44, SQ.y + 300, 22, C.ink, 800); label("전체: 패치 576개 + [CLS] → 벡터 577개", SQ.x + SQ.w + 44, SQ.y + 332, 22, C.sub); x.globalAlpha = 1; }
       }
       if (k >= 4) {
         const q = P(4);
         x.globalAlpha = q;
         const bx = SQ.x + SQ.w + 50, bw = 1000 - bx - 20;
         x.fillStyle = C["enc-soft"]; x.strokeStyle = C.enc; x.lineWidth = 3; rr(x, bx, SQ.y, bw, SQ.h - 20, 20); x.fill(); x.stroke();
-        label("Image Transformer Encoder", bx + 28, SQ.y + 52, 28, C.ink, 800);
+        label("Image Transformer 인코더", bx + 28, SQ.y + 52, 28, C.ink, 800);
         ["Multi-Head Self-Attention", "Feed Forward"].forEach((s, i) => { x.fillStyle = C.paper; rr(x, bx + 28, SQ.y + 82 + i * 82, bw - 56, 64, 10); x.fill(); label(s, bx + 48, SQ.y + 122 + i * 82, 22, C.ink, 700); });
         label("× 12층 (Base) / 24층 (Large)", bx + 28, SQ.y + 286, 22, C.enc, 800);
-        // 개념 Attention 호
-        const qi = Math.floor(t / 900) % 24;
-        const ax = TX + qi * TG + TS / 2;
+        const qi = Math.floor(t / 900) % 24, ax = TX + qi * TG + TS / 2;
         for (let j = 0; j < 24; j++) {
           if (j === qi) continue;
           const wgt = 0.12 + 0.88 * Math.pow(Math.abs(Math.sin(qi * 1.7 + j * 0.9)), 4) * (1 / (1 + Math.abs(j - qi) * 0.12));
@@ -956,9 +1068,9 @@ window.EXP = {
     return { frame, step(s) { k = s; t0 = performance.now(); } };
   })();
 
-  /* ================================================================ 8 Decoder */
+  /* ================================================================ 9 디코더 */
   mods.decoder = (function () {
-    const cv = document.getElementById("cv-dec"), x = setup(cv, 1100, 153);
+    const x = setup($("cv-dec"), 1100, 153);
     const toks = ["Reading", " text", " from", " pix", "els", "[EOS]"];
     const cand = [
       [["Reading", .86], ["Reeding", .06], ["Heading", .04]],
@@ -968,56 +1080,53 @@ window.EXP = {
       [["els", .88], ["el", .07], ["ets", .03]],
       [["[EOS]", .97], [".", .02], ["s", .01]]
     ];
-    let regions = [];
+    let regions = [], k = 0, timer = null;
     function measure() {
       const m = document.createElement("canvas").getContext("2d"); m.font = lineCv.font;
       let off = 0; regions = toks.map((tk) => {
         if (tk === "[EOS]") return [0, 1];
         const pre = LINE.slice(0, off), s = LINE.slice(off, off + tk.length); off += tk.length;
-        const a = 40 + m.measureText(pre).width, w = m.measureText(s).width;
-        return [(a - 6) / 1152, (w + 12) / 1152];
+        return [(40 + m.measureText(pre).width - 6) / 1152, (m.measureText(s).width + 12) / 1152];
       });
     }
-    let k = 0, timer = null;
-    const seq = document.getElementById("dec-seq"), probs = document.getElementById("dec-probs"), att = document.getElementById("dec-att"), note = document.getElementById("dec-note");
+    const seq = $("dec-seq"), probs = $("dec-probs"), att = $("dec-att"), note = $("dec-note");
     const vis = (s) => s.replace(/^ /, "␣");
     function render(animate) {
       x.drawImage(lineCv, 0, 0, 1100, 153);
-      seq.innerHTML = "";
-      const bos = document.createElement("span"); bos.className = "chip sp"; bos.textContent = "[BOS]"; seq.appendChild(bos);
+      seq.innerHTML = '<span class="chip sp">[BOS]</span>';
       for (let i = 0; i < k; i++) { const c = document.createElement("span"); c.className = "chip" + (toks[i] === "[EOS]" ? " sp" : "") + (animate && i === k - 1 ? " new" : ""); c.textContent = vis(toks[i]); seq.appendChild(c); }
-      if (k === 0) { att.style.opacity = 0; probs.innerHTML = cand[0].map(([t]) => `<div class="prob"><span class="tk">?</span><span class="track"><i style="width:0"></i></span><span class="v">–</span></div>`).join(""); note.textContent = "[BOS]에서 시작한다. → 키를 누르면 토큰을 하나씩 생성한다."; return; }
-      const r = regions[k - 1]; att.style.opacity = k - 1 === 5 ? 0.35 : 1; att.style.left = r[0] * 100 + "%"; att.style.width = r[1] * 100 + "%";
-      probs.innerHTML = cand[k - 1].map(([t, v], i) => `<div class="prob${i === 0 ? " pick" : ""}"><span class="tk">${esc(vis(t))}</span><span class="track"><i style="width:0"></i></span><span class="v">${v.toFixed(2)}</span></div>`).join("");
-      requestAnimationFrame(() => probs.querySelectorAll(".track i").forEach((e, i) => (e.style.width = cand[k - 1][i][1] * 100 + "%")));
-      note.textContent = k === 6 ? "[EOS]가 가장 높으면 생성을 멈춘다. 결과: “" + LINE + "”" : `${k}번째 토큰 ${vis(toks[k - 1])} 선택 → 다음 단계 입력에 추가`;
+      if (k === 0) { att.style.opacity = 0; probs.innerHTML = cand[0].map(() => '<div class="prob"><span class="tk">?</span><span class="track2"><i style="width:0"></i></span><span class="v">–</span></div>').join(""); note.textContent = "[BOS]에서 시작"; return; }
+      const r = regions[k - 1]; att.style.opacity = k === 6 ? 0.35 : 1; att.style.left = r[0] * 100 + "%"; att.style.width = r[1] * 100 + "%";
+      probs.innerHTML = cand[k - 1].map(([t, v], i) => `<div class="prob${i === 0 ? " pick" : ""}"><span class="tk">${esc(vis(t))}</span><span class="track2"><i style="width:0"></i></span><span class="v">${v.toFixed(2)}</span></div>`).join("");
+      requestAnimationFrame(() => probs.querySelectorAll(".track2 i").forEach((e, i) => (e.style.width = cand[k - 1][i][1] * 100 + "%")));
+      note.textContent = k === 6 ? `[EOS] 확률이 가장 높으면 생성 종료. 결과: “${LINE}”` : `${k}번째 토큰 ${vis(toks[k - 1])} 선택 → 다음 단계 입력에 추가`;
     }
-    function stop() { clearInterval(timer); timer = null; document.getElementById("dec-play").classList.remove("on"); document.getElementById("dec-play").textContent = "자동 재생"; }
-    document.getElementById("dec-play").addEventListener("click", () => {
+    const btn = $("dec-play");
+    function stop() { clearInterval(timer); timer = null; btn.classList.remove("on"); btn.textContent = "자동 재생"; }
+    btn.addEventListener("click", () => {
       if (timer) return stop();
       if (k >= 6) window.__deck.setStep(0);
-      const b = document.getElementById("dec-play"); b.classList.add("on"); b.textContent = "멈춤";
+      btn.classList.add("on"); btn.textContent = "멈춤";
       timer = setInterval(() => { if (k >= 6) return stop(); window.__deck.next(); }, 1300);
     });
     return { init: measure, step(s, entering) { k = s; render(!entering); }, leave: stop };
   })();
 
-  /* ================================================================ 9 데이터 증강 */
+  /* ================================================================ 12 데이터 증강 */
   function buildAug() {
-    const host = document.getElementById("aug"); host.innerHTML = "";
+    const host = $("aug"); host.innerHTML = "";
     const T = "Reading text", W = 320, H = 96;
-    const kinds = ["원본", "회전 ±10°", "가우시안 블러", "팽창 (굵게)", "침식 (가늘게)", "축소", "밑줄"];
-    kinds.forEach((name, i) => {
+    ["원본", "회전 ±10°", "가우시안 블러", "팽창 (굵게)", "침식 (가늘게)", "축소", "밑줄"].forEach((name, i) => {
       const f = document.createElement("figure"), c = document.createElement("canvas"); c.width = W * 2; c.height = H * 2;
       const x = c.getContext("2d"); x.scale(2, 2);
       const paper = "#ECE8DF", ink = "#1E2740";
       x.fillStyle = paper; x.fillRect(0, 0, W, H);
-      const draw = (ctx) => { const s = fitFont(ctx, T, HAND, W - 40, 58); ctx.fillStyle = ink; ctx.textBaseline = "middle"; ctx.fillText(T, 20, H / 2 + 4); return s; };
+      const draw = (ctx) => { fitFont(ctx, T, HAND, W - 40, 58); ctx.fillStyle = ink; ctx.textBaseline = "middle"; ctx.fillText(T, 20, H / 2 + 4); };
       if (i === 1) { x.save(); x.translate(W / 2, H / 2); x.rotate(-8 * Math.PI / 180); x.translate(-W / 2, -H / 2); draw(x); x.restore(); }
       else if (i === 2) { x.filter = "blur(2.2px)"; draw(x); x.filter = "none"; }
       else if (i === 3) { draw(x); x.strokeStyle = ink; x.lineWidth = 3.2; x.lineJoin = "round"; x.strokeText(T, 20, H / 2 + 4); }
       else if (i === 4) { draw(x); x.strokeStyle = paper; x.lineWidth = 2.2; x.strokeText(T, 20, H / 2 + 4); }
-      else if (i === 5) { const s = document.createElement("canvas"); s.width = W / 4; s.height = H / 4; const sx = s.getContext("2d"); sx.fillStyle = paper; sx.fillRect(0, 0, W / 4, H / 4); sx.scale(0.25, 0.25); draw(sx); x.imageSmoothingEnabled = true; x.drawImage(s, 0, 0, W, H); }
+      else if (i === 5) { const s = document.createElement("canvas"); s.width = W / 4; s.height = H / 4; const sx = s.getContext("2d"); sx.fillStyle = paper; sx.fillRect(0, 0, W / 4, H / 4); sx.scale(0.25, 0.25); draw(sx); x.drawImage(s, 0, 0, W, H); }
       else if (i === 6) { draw(x); x.strokeStyle = ink; x.lineWidth = 3; x.beginPath(); x.moveTo(16, H / 2 + 26); x.lineTo(W - 20, H / 2 + 24); x.stroke(); }
       else draw(x);
       const cap = document.createElement("figcaption"); cap.textContent = name;
@@ -1025,7 +1134,7 @@ window.EXP = {
     });
   }
 
-  /* ================================================================ 10 손실 */
+  /* ================================================================ 13 손실 */
   mods.loss = (function () {
     const inp = ["[BOS]", "TOTAL", " 12", ".", "50"], tgt = ["TOTAL", " 12", ".", "50", "[EOS]"];
     const pr = [0.95, 0.90, 0.48, 0.86, 0.97];
@@ -1035,14 +1144,13 @@ window.EXP = {
     let dot, dotT;
     function table() {
       const ls = pr.map((p) => -Math.log(p)), worst = ls.indexOf(Math.max(...ls));
-      document.getElementById("tf-table").innerHTML =
+      $("tf-table").innerHTML =
         `<tr><th>위치 t</th>${inp.map((_, i) => `<th>${i + 1}</th>`).join("")}</tr>` +
         `<tr><td>디코더 입력</td>${inp.map((s) => `<td>${esc(vis(s))}</td>`).join("")}</tr>` +
         `<tr><td>정답 (다음 토큰)</td>${tgt.map((s) => `<td class="dec-t">${esc(vis(s))}</td>`).join("")}</tr>` +
         `<tr data-at="1"><td>정답 확률 p</td>${pr.map((p) => `<td>${p.toFixed(2)}</td>`).join("")}</tr>` +
         `<tr data-at="1"><td>손실 −log p</td>${ls.map((l, i) => `<td class="${i === worst ? "worst" : ""}">${l.toFixed(3)}</td>`).join("")}</tr>`;
-      const mean = ls.reduce((a, b) => a + b, 0) / ls.length;
-      document.getElementById("tf-mean").textContent = " = " + mean.toFixed(3);
+      $("tf-mean").textContent = " = " + (ls.reduce((a, b) => a + b, 0) / ls.length).toFixed(3);
       if (dot) { const v = -Math.log(pr[2]); dot.setAttribute("cx", X(pr[2])); dot.setAttribute("cy", Y(Math.min(v, 5))); dotT.setAttribute("x", X(pr[2]) + 14); dotT.setAttribute("y", Y(Math.min(v, 5)) - 12); dotT.textContent = `p=${pr[2].toFixed(2)} → ${v.toFixed(2)}`; }
       window.__deck && window.__deck.refresh();
     }
@@ -1051,35 +1159,34 @@ window.EXP = {
       [0, 1, 2, 3, 4, 5].forEach((v) => { el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: "grid" }, svg); txt(svg, m.l - 10, Y(v) + 6, v, { "text-anchor": "end", class: "ct small" }); });
       [0, 0.25, 0.5, 0.75, 1].forEach((p) => txt(svg, X(p), H - m.b + 26, p, { "text-anchor": "middle", class: "ct small" }));
       txt(svg, (m.l + W - m.r) / 2, H - 4, "정답 토큰의 확률 p", { "text-anchor": "middle", class: "ct small" });
-      let d = ""; for (let i = 0; i <= 200; i++) { const p = 0.007 + i / 200 * 0.993, v = Math.min(-Math.log(p), 5); d += (i ? "L" : "M") + X(p).toFixed(1) + "," + Y(v).toFixed(1); }
+      let d = ""; for (let i = 0; i <= 200; i++) { const p = 0.007 + i / 200 * 0.993; d += (i ? "L" : "M") + X(p).toFixed(1) + "," + Y(Math.min(-Math.log(p), 5)).toFixed(1); }
       el("path", { d, fill: "none", stroke: C.dec, "stroke-width": 4, class: "draw", pathLength: 1, style: "--dur:1.2s" }, svg);
       dot = el("circle", { r: 10, fill: C.dec, stroke: C.paper, "stroke-width": 3 }, svg);
       dotT = txt(svg, 0, 0, "", { class: "ct ink", style: "font-weight:800" });
       table();
     }
-    const sl = document.getElementById("tf-p");
-    sl.addEventListener("input", () => { pr[2] = +sl.value / 100; document.getElementById("tf-pv").textContent = pr[2].toFixed(2); table(); });
+    const sl = $("tf-p");
+    sl.addEventListener("input", () => { pr[2] = +sl.value / 100; $("tf-pv").textContent = pr[2].toFixed(2); table(); });
     return { init: chart, rebuild: chart };
   })();
 
-  /* ================================================================ 11 CER WER 위젯 */
+  /* ================================================================ 14 CER·WER 위젯 */
   function metric() {
-    const g = document.getElementById("m-gt").value, p = document.getElementById("m-pred").value;
+    const g = $("m-gt").value, p = $("m-pred").value;
     const r = align([...g], [...p]);
-    document.getElementById("m-align").innerHTML = r.ops.map((o) => `<div class="col ${o.op === "=" ? "" : o.op}"><span>${o.a === " " ? "␣" : esc(o.a || "·")}</span><span>${o.b === " " ? "␣" : esc(o.b || "·")}</span><small>${o.op === "=" ? "" : o.op}</small></div>`).join("");
-    const c = r.n ? r.dist / r.n : 0;
-    document.getElementById("m-cer").textContent = fmtPct(c);
-    document.getElementById("m-cer-f").textContent = `(S ${r.cnt.S} + D ${r.cnt.D} + I ${r.cnt.I}) / N ${r.n}`;
+    $("m-align").innerHTML = r.ops.map((o) => `<div class="col ${o.op === "=" ? "" : o.op}"><span>${o.a === " " ? "␣" : esc(o.a || "·")}</span><span>${o.b === " " ? "␣" : esc(o.b || "·")}</span><small>${o.op === "=" ? "" : o.op}</small></div>`).join("");
+    $("m-cer").textContent = fmtPct(r.n ? r.dist / r.n : 0);
+    $("m-cer-f").textContent = `(S ${r.cnt.S} + D ${r.cnt.D} + I ${r.cnt.I}) / N ${r.n}`;
     const w = align(words(g), words(p));
-    document.getElementById("m-wer").textContent = fmtPct(w.n ? w.dist / w.n : 0);
-    document.getElementById("m-wer-f").textContent = `틀린 단어 연산 ${w.dist} / 정답 단어 ${w.n}`;
+    $("m-wer").textContent = fmtPct(w.n ? w.dist / w.n : 0);
+    $("m-wer-f").textContent = `단어 편집 ${w.dist} / 정답 단어 ${w.n}`;
   }
-  ["m-gt", "m-pred"].forEach((id) => document.getElementById(id).addEventListener("input", metric));
+  ["m-gt", "m-pred"].forEach((id) => $(id).addEventListener("input", metric));
 
-  /* ================================================================ 12 결과 차트 */
+  /* ================================================================ 15·16 원논문 결과 차트 */
   function buildResults() {
-    { // 누적 막대 (가로)
-      const W = 900, H = 520, svg = svgIn("abl-chart", W, H);
+    {
+      const W = 980, H = 520, svg = svgIn("abl-chart", W, H);
       const rows = [["처음부터 학습", 38.24], ["+ 사전학습 모델 사용", 72.75], ["+ 데이터 증강", 82.30], ["+ 1단계 사전학습", 95.48], ["+ 2단계 사전학습", 95.84]];
       const m = { l: 280, r: 90, t: 10 }, X = (v) => m.l + v / 100 * (W - m.l - m.r), bh = 56, gap = 34;
       [0, 25, 50, 75, 100].forEach((v) => { el("line", { x1: X(v), x2: X(v), y1: m.t, y2: m.t + rows.length * (bh + gap), class: "grid" }, svg); txt(svg, X(v), m.t + rows.length * (bh + gap) + 26, v, { "text-anchor": "middle", class: "ct small" }); });
@@ -1089,129 +1196,119 @@ window.EXP = {
         const b = el("rect", { x: X(0), y, width: X(v) - X(0), height: bh, rx: 6, fill: i === 4 ? C.enc : i === 0 ? C.faint : C.mid, class: "bar-h go" }, svg); b.style.setProperty("--d", i * 0.18 + "s");
         txt(svg, X(v) + 10, y + bh / 2 + 9, v.toFixed(2), { class: "ct ink", style: "font-weight:800;font-size:25px" });
         if (i > 0) {
-          const g = el("g", { "data-at": 1 }, svg), dv = v - rows[i - 1][1];
+          const g = el("g", { "data-at": 1 }, svg);
           el("rect", { x: X(rows[i - 1][1]), y: y + 4, width: X(v) - X(rows[i - 1][1]), height: bh - 8, fill: "none", stroke: C.hl, "stroke-width": 4, rx: 4 }, g);
-          txt(g, X(rows[i - 1][1]) + 8, y - 6, "+" + dv.toFixed(2), { class: "ct small", style: "font-weight:800;fill:var(--ink)" });
         }
       });
     }
-    { // IAM
-      const W = 700, H = 370, svg = svgIn("iam-chart", W, H);
-      const rows = [["TrOCR-Large", 2.89, "합성+IAM", 1], ["TrOCR-Base", 3.42, "합성+IAM", 1], ["TrOCR-Small", 4.22, "합성+IAM", 1], ["Bluche & Messina 2017", 3.2, "외부 LM 사용", 0], ["Kang et al. 2020", 4.67, "합성+IAM", 0], ["Diaz et al. 2021", 2.75, "내부 데이터 + 외부 LM", 2]];
-      const m = { l: 250, r: 70 }, X = (v) => m.l + v / 5 * (W - m.l - m.r), bh = 32, gap = 18;
+    {
+      const W = 860, H = 370, svg = svgIn("iam-chart", W, H);
+      const rows = [["TrOCR-Large", 2.89, 1], ["TrOCR-Base", 3.42, 1], ["TrOCR-Small", 4.22, 1], ["Bluche & Messina 2017 (외부 LM)", 3.2, 0], ["Kang et al. 2020", 4.67, 0], ["Diaz et al. 2021 (내부 데이터 + 외부 LM)", 2.75, 2]];
+      const m = { l: 400, r: 70 }, X = (v) => m.l + v / 5 * (W - m.l - m.r), bh = 32, gap = 18;
       [0, 1, 2, 3, 4, 5].forEach((v) => { el("line", { x1: X(v), x2: X(v), y1: 0, y2: rows.length * (bh + gap), class: "grid" }, svg); txt(svg, X(v), rows.length * (bh + gap) + 22, v, { "text-anchor": "middle", class: "ct small" }); });
-      rows.forEach(([n, v, note, kind], i) => {
+      rows.forEach(([n, v, kind], i) => {
         const y = i * (bh + gap);
         txt(svg, m.l - 12, y + 23, n, { "text-anchor": "end", class: "ct small " + (kind === 1 ? "ink" : ""), style: kind === 1 ? "font-weight:800" : "" });
         const b = el("rect", { x: X(0), y, width: X(v) - X(0), height: bh, rx: 5, fill: kind === 1 ? (i === 0 ? C.enc : C.mid) : C.faint, class: "bar-h" }, svg); b.style.setProperty("--d", i * 0.12 + "s");
         if (kind === 2) b.setAttribute("fill-opacity", ".55");
         txt(svg, X(v) + 8, y + 23, v.toFixed(2), { class: "ct small ink", style: "font-weight:800" });
       });
-      txt(svg, 20, H - 8, "Diaz et al.: 비공개 내부 데이터 + 외부 언어모델 (조건 다름)", { class: "ct small" });
+      txt(svg, 0, H - 8, "TrOCR는 합성 데이터 + IAM만 사용, 외부 언어모델 없음", { class: "ct small" });
     }
   }
 
-  /* ================================================================ 13 · 14 자체 실험 */
+  /* ================================================================ 18·19 자체 실험 */
   function degradeCanvas(cv, text, o, w, h) {
     const x = setup(cv, w, h); const R = rng(11);
-    x.fillStyle = "#F7F6F2"; x.fillRect(0, 0, w, h);
+    x.fillStyle = "#FFFFFF"; x.fillRect(0, 0, w, h);
     x.save(); x.translate(w / 2, h / 2); x.rotate(((o.rotate || 0) * Math.PI) / 180);
     if (o.blur) x.filter = `blur(${o.blur * (w / 640)}px)`;
-    const tpl = '700 {s}px "JetBrains Mono", Consolas, monospace'; fitFont(x, text, tpl, w * 0.86, h * 0.5);
-    x.fillStyle = "#1A1A1A"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, 0, 2); x.restore(); x.filter = "none";
+    fitFont(x, text, `700 {s}px ${FONT}`, w * 0.82, h * 0.48);
+    x.fillStyle = "#151515"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, 0, 2); x.restore(); x.filter = "none";
     if (o.noise) {
       const im = x.getImageData(0, 0, cv.width, cv.height), d = im.data;
       for (let i = 0; i < d.length; i += 4) { const u = Math.max(R(), 1e-9), v = R(); const n = Math.sqrt(-2 * Math.log(u)) * Math.cos(6.2832 * v) * o.noise; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
       x.putImageData(im, 0, 0);
     }
   }
+  /* 실험 이미지(img)가 있으면 그것을, 없으면 같은 조건을 그린 캔버스를 보여준다 */
+  function imageOr(host, src, cls, draw) {
+    host.innerHTML = "";
+    const img = new Image(); img.className = cls; img.alt = "";
+    img.onerror = () => { const c = document.createElement("canvas"); c.className = cls; host.innerHTML = ""; host.appendChild(c); draw(c); };
+    img.src = src; host.appendChild(img);
+  }
+  const ENG = ["tess", "trocr"];
+  const measured = (k) => window.EXP.samples.some((s) => s[k] != null);
+  function corpus(k) {
+    let d = 0, n = 0, wd = 0, wn = 0;
+    window.EXP.samples.forEach((s) => { if (s[k] == null) return; const a = align([...s.gt], [...s[k]]); d += a.dist; n += a.n; const b = align(words(s.gt), words(s[k])); wd += b.dist; wn += b.n; });
+    return n ? [d / n, wd / wn] : null;
+  }
   function buildExp() {
-    const E = window.EXP;
-    document.getElementById("exp-badge").hidden = !E.placeholder;
-    document.getElementById("deg-badge").hidden = !E.placeholder;
-    document.getElementById("exp-setup").innerHTML = `<span><b>모델</b> ${esc(E.model)}</span><span><b>비교</b> ${esc(E.baseline)}</span><span><b>이미지</b> ${E.samples.length}장</span><span class="muted">${esc(E.note || "")}</span>`;
-    const tb = document.getElementById("exp-table");
-    tb.innerHTML = `<tr><th>입력 이미지</th><th>정답</th><th>TrOCR</th><th class="num">CER</th><th>${esc(E.baseline)}</th><th class="num">CER</th></tr>` +
-      E.samples.map((s, i) => `<tr><td><span class="xs muted">${esc(s.kind)}</span>${s.img ? `<img src="${esc(s.img)}" alt="${esc(s.gt)}" style="display:block;width:280px;border-radius:6px">` : `<canvas id="exp-cv-${i}"></canvas>`}</td><td class="txt">${esc(s.gt)}</td><td class="txt">${diffHTML(s.gt, s.trocr)}</td><td class="num">${fmtPct(cer(s.gt, s.trocr))}</td><td class="txt">${diffHTML(s.gt, s.base)}</td><td class="num">${fmtPct(cer(s.gt, s.base))}</td></tr>`).join("");
-    E.samples.forEach((s, i) => { const c = document.getElementById("exp-cv-" + i); if (c) degradeCanvas(c, s.gt, s, 280, 54); });
-    const tot = (key) => { let d = 0, n = 0, wd = 0, wn = 0; E.samples.forEach((s) => { const a = align([...s.gt], [...s[key]]); d += a.dist; n += a.n; const b = align(words(s.gt), words(s[key])); wd += b.dist; wn += b.n; }); return [d / n, wd / wn]; };
-    const [tc, tw] = tot("trocr"), [bc, bw] = tot("base");
-    document.getElementById("exp-sum").innerHTML =
-      `<div class="panel"><div class="k">TrOCR 전체 CER</div><div class="v enc-t">${fmtPct(tc)}</div></div>` +
-      `<div class="panel"><div class="k">TrOCR 전체 WER</div><div class="v enc-t">${fmtPct(tw)}</div></div>` +
-      `<div class="panel"><div class="k">${esc(E.baseline)} 전체 CER</div><div class="v">${fmtPct(bc)}</div></div>` +
-      `<div class="panel"><div class="k">${esc(E.baseline)} 전체 WER</div><div class="v">${fmtPct(bw)}</div></div>` +
-      `<p class="xs muted" style="align-self:center;max-width:420px">전체 값은 모든 이미지의 편집 횟수 합 ÷ 정답 글자(단어) 수 합. 빨간 표시는 틀린 글자, ‸는 빠진 글자.</p>`;
+    const E = window.EXP, trocrOK = measured("trocr");
+    $("exp-badge").hidden = trocrOK; $("deg-badge").hidden = E.degrade.blur.trocr.some((v) => v != null);
+    $("exp-setup").innerHTML = ENG.map((k) => `<span><b>${E.engines[k].name}</b> ${esc(E.engines[k].detail)}</span>`).join("") + `<span class="muted">${esc(E.note)}</span>`;
+    const cell = (s, k) => s[k] == null ? ['<span class="na">미측정</span>', "–"] : [diffHTML(s.gt, s[k]), fmtPct(cer(s.gt, s[k]))];
+    $("exp-table").innerHTML = `<tr><th>입력 이미지</th><th>조건</th><th>정답</th><th>Tesseract</th><th class="num">CER</th><th>TrOCR</th><th class="num">CER</th></tr>` +
+      E.samples.map((s) => { const a = cell(s, "tess"), b = cell(s, "trocr"); return `<tr><td><div id="exp-im-${s.id}"></div></td><td class="kind">${esc(s.kind)}</td><td class="txt">${esc(s.gt)}</td><td class="txt">${a[0]}</td><td class="num">${a[1]}</td><td class="txt">${b[0]}</td><td class="num">${b[1]}</td></tr>`; }).join("");
+    E.samples.forEach((s) => imageOr($("exp-im-" + s.id), s.img || `img/${s.id}.png`, "thumb", (c) => degradeCanvas(c, s.gt, s, 220, 38)));
+    const pan = (k) => { const r = corpus(k); const name = E.engines[k].name; return r ? `<div class="panel"><div class="k">${name} 전체 CER</div><div class="v">${fmtPct(r[0])}</div></div><div class="panel"><div class="k">${name} 전체 WER</div><div class="v">${fmtPct(r[1])}</div></div>` : `<div class="panel"><div class="k">${name}</div><div class="v na" style="font-size:36px">미측정</div></div>`; };
+    $("exp-sum").innerHTML = pan("tess") + pan("trocr") + `<p class="xs muted" style="align-self:center;max-width:440px">전체 = 편집 횟수 합 ÷ 정답 글자(단어) 수 합. n = 8 합성 이미지로, 일반적인 성능 비교 근거는 아님</p>`;
   }
   mods.degrade = (function () {
-    let f = "blur";
-    const tabs = document.getElementById("deg-tabs"), sl = document.getElementById("deg-lv");
+    let f = "rotate";
+    const tabs = $("deg-tabs"), sl = $("deg-lv");
     function render() {
-      const D = window.EXP.degrade, F = D[f], lv = +sl.value, val = F.levels[lv], pred = F.pred[lv];
+      const D = window.EXP.degrade, F = D[f], lv = +sl.value, val = F.levels[lv];
       tabs.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.f === f); b.setAttribute("aria-selected", b.dataset.f === f); });
-      document.getElementById("deg-lv-l").textContent = F.name + " 강도";
-      document.getElementById("deg-lv-v").textContent = val + F.unit;
-      degradeCanvas(document.getElementById("cv-deg"), D.text, { [f]: val }, 860, 200);
-      document.getElementById("deg-pred").innerHTML = pred == null ? '<span class="muted">측정값 없음</span>' : diffHTML(D.text, pred);
-      document.getElementById("deg-cer").innerHTML = pred == null ? "" : `CER <b>${fmtPct(cer(D.text, pred))}</b> · 정답 <span class="mono">${esc(D.text)}</span>`;
-      document.getElementById("deg-ct").textContent = `${F.name} 강도별 CER`;
-      // 차트
-      const W = 760, H = 420, svg = svgIn("deg-chart", W, H), m = { l: 70, r: 30, t: 20, b: 60 };
-      const cs = F.pred.map((p) => (p == null ? null : cer(D.text, p) * 100));
-      const ymax = Math.max(20, Math.ceil(Math.max(...cs.filter((v) => v != null)) / 20) * 20);
+      $("deg-lv-l").textContent = F.name + " 강도"; $("deg-lv-v").textContent = val + F.unit;
+      imageOr($("deg-img"), `img/degrade_${f}_${lv}.png`, "", (c) => degradeCanvas(c, D.text, { [f]: val }, 820, 200));
+      $("deg-pred").innerHTML = ENG.map((k) => { const p = F[k][lv]; const name = window.EXP.engines[k].name; return p == null ? `<div class="predrow"><span class="tag" style="margin:0">${name}</span><span class="p na" style="font-size:26px">미측정</span><span></span></div>` : `<div class="predrow"><span class="tag" style="margin:0">${name}</span><span class="p">${diffHTML(D.text, p)}</span><b>CER ${fmtPct(cer(D.text, p))}</b></div>`; }).join("");
+      $("deg-ct").textContent = `${F.name} 강도별 CER`;
+      $("deg-note").textContent = `정답 "${D.text}" 한 장에 ${F.name}만 단계별로 적용. 같은 문장에서 만든 변형이라 독립 표본이 아님`;
+      const cols = { tess: C.mid, trocr: C.enc };
+      $("deg-legend").innerHTML = ENG.map((k) => `<span><i style="background:${cols[k]}"></i>${window.EXP.engines[k].name}${F[k].every((v) => v == null) ? " (미측정)" : ""}</span>`).join("");
+      const W = 780, H = 420, svg = svgIn("deg-chart", W, H), m = { l: 70, r: 30, t: 30, b: 60 };
+      const series = ENG.map((k) => F[k].map((p) => (p == null ? null : cer(D.text, p) * 100)));
+      const all = series.flat().filter((v) => v != null);
+      const ymax = Math.max(20, Math.ceil(Math.max(0, ...all) / 20) * 20);
       const X = (i) => m.l + i / (F.levels.length - 1) * (W - m.l - m.r), Y = (v) => H - m.b - v / ymax * (H - m.t - m.b);
       for (let v = 0; v <= ymax; v += ymax / 4) { el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: "grid" }, svg); txt(svg, m.l - 10, Y(v) + 6, v.toFixed(0) + "%", { "text-anchor": "end", class: "ct small" }); }
       F.levels.forEach((l, i) => txt(svg, X(i), H - m.b + 28, l + F.unit, { "text-anchor": "middle", class: "ct small" }));
-      const pts = cs.map((v, i) => (v == null ? null : [X(i), Y(v)])).filter(Boolean);
-      el("path", { d: "M" + pts.map((p) => p.join(",")).join("L"), fill: "none", stroke: C.enc, "stroke-width": 4, "stroke-linejoin": "round" }, svg);
-      cs.forEach((v, i) => { if (v == null) return; el("circle", { cx: X(i), cy: Y(v), r: i === lv ? 11 : 6, fill: i === lv ? C.hl : C.enc, stroke: i === lv ? C.ink : C.paper, "stroke-width": 3 }, svg); if (i === lv) txt(svg, X(i) + (i === 0 ? 16 : 0), Y(v) - 20, v.toFixed(1) + "%", { "text-anchor": i === 0 ? "start" : "middle", class: "ct ink", style: "font-weight:800" }); });
+      el("line", { x1: X(lv), x2: X(lv), y1: m.t - 10, y2: H - m.b, stroke: C.hl, "stroke-width": 4, "stroke-opacity": .6 }, svg);
+      ENG.forEach((k, si) => {
+        const pts = series[si].map((v, i) => (v == null ? null : [X(i), Y(v)])).filter(Boolean);
+        if (!pts.length) return;
+        el("path", { d: "M" + pts.map((p) => p.join(",")).join("L"), fill: "none", stroke: cols[k], "stroke-width": 4, "stroke-linejoin": "round" }, svg);
+        series[si].forEach((v, i) => { if (v == null) return; el("circle", { cx: X(i), cy: Y(v), r: i === lv ? 10 : 6, fill: cols[k], stroke: C.paper, "stroke-width": 3 }, svg); });
+      });
     }
     function init() {
       tabs.innerHTML = ["blur", "rotate", "noise"].map((k) => `<button class="btn" type="button" role="tab" data-f="${k}">${window.EXP.degrade[k].name}</button>`).join("");
       tabs.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; f = b.dataset.f; render(); });
-      sl.max = window.EXP.degrade.blur.levels.length - 1;
       sl.addEventListener("input", render);
       render();
     }
     return { init, rebuild: render };
   })();
 
-  /* ================================================================ 16 결론 */
-  function buildConcl() {
-    const svg = document.getElementById("concl-svg"); svg.innerHTML = ""; const ah = arrowDefs(svg);
-    const cy = 110, items = [
-      { x: 0, w: 300, t: "한 줄 이미지", k: "img" }, { x: 370, w: 230, t: "패치 576개", k: "sq" },
-      { x: 670, w: 300, t: "Encoder", s: "이미지 특징", c: "enc" }, { x: 1040, w: 300, t: "Decoder", s: "토큰 순차 생성", c: "dec" },
-      { x: 1410, w: 270, t: "텍스트", k: "out" }
-    ];
-    items.forEach((it, i) => {
-      const g = el("g", {}, svg); g.style.animation = `fadein .5s ${i * 0.25}s both`;
-      if (it.k === "img") { const im = el("image", { x: it.x, y: cy - 21, width: 300, height: 42, preserveAspectRatio: "none" }, g); im.setAttribute("href", lineCv.toDataURL()); }
-      else if (it.k === "sq") { const im = el("image", { x: it.x + 45, y: cy - 70, width: 140, height: 140, preserveAspectRatio: "none" }, g); im.setAttribute("href", sqCv.toDataURL()); for (let q = 1; q < 12; q++) { el("line", { x1: it.x + 45 + q * 140 / 12, x2: it.x + 45 + q * 140 / 12, y1: cy - 70, y2: cy + 70, stroke: C.enc, "stroke-opacity": .6 }, g); el("line", { x1: it.x + 45, x2: it.x + 185, y1: cy - 70 + q * 140 / 12, y2: cy - 70 + q * 140 / 12, stroke: C.enc, "stroke-opacity": .6 }, g); } }
-      else if (it.k === "out") { el("rect", { x: it.x, y: cy - 36, width: it.w, height: 72, rx: 14, class: "box plain" }, g); txt(g, it.x + it.w / 2, cy + 9, "Reading text…", { "text-anchor": "middle", class: "ct ink", style: "font:700 24px var(--mono)" }); }
-      else { el("rect", { x: it.x, y: cy - 70, width: it.w, height: 140, rx: 22, class: "box " + it.c }, g); txt(g, it.x + it.w / 2, cy - 4, it.t, { "text-anchor": "middle", class: "ct big" }); txt(g, it.x + it.w / 2, cy + 32, it.s, { "text-anchor": "middle", class: "ct" }); }
-      if (it.k) txt(g, it.x + it.w / 2, cy + 108, it.t, { "text-anchor": "middle", class: "ct" });
-      if (i < items.length - 1) el("path", { d: `M${it.x + it.w + 8},${cy} L${items[i + 1].x - 12},${cy}`, class: "arrow", "marker-end": ah }, g);
-    });
-    if (!reduce) { const p = el("circle", { r: 9, fill: C.hl, class: "packet" }, svg); el("animateMotion", { dur: "3.4s", repeatCount: "indefinite", path: `M300,${cy} L1410,${cy}` }, p); }
-  }
-
-  /* ================================================================ 슬라이드 엔진 (DMN 발표와 같은 조작) */
+  /* ================================================================ 슬라이드 엔진 (ML_project와 같은 조작) */
   const SCRIPT_URL = "https://ml-scrpit-two.onrender.com/";   // 대본 사이트 (JsonParc/ml_scrpit_two)
   let cur = 0, step = 0;
-  const ref = deck.querySelector(".scriptref");
-  const bar = deck.querySelector(".prog i"), pageno = deck.querySelector(".pageno"), label = deck.querySelector(".top .label");
+  const bar = deck.querySelector(".prog i"), pageno = deck.querySelector(".pageno"), label = deck.querySelector(".top .label"), ref = deck.querySelector(".scriptref");
   const nSteps = (s) => +(s.dataset.steps || 1);
+  const has = (e, a) => e.getAttribute(a).split(" ").map(Number).includes(step);
   function apply(entering) {
     const s = slides[cur];
     s.querySelectorAll("[data-at]").forEach((e) => e.classList.toggle("on", step >= +e.getAttribute("data-at")));
-    s.querySelectorAll("[data-only]").forEach((e) => e.classList.toggle("on", e.getAttribute("data-only").split(" ").map(Number).includes(step)));
-    s.querySelectorAll("[data-hl]").forEach((e) => e.classList.toggle("hl", e.getAttribute("data-hl").split(" ").map(Number).includes(step)));
-    s.querySelectorAll("[data-dim]").forEach((e) => e.classList.toggle("dim", e.getAttribute("data-dim").split(" ").map(Number).includes(step)));
+    s.querySelectorAll("[data-only]").forEach((e) => e.classList.toggle("on", has(e, "data-only")));
+    s.querySelectorAll("[data-hl]").forEach((e) => e.classList.toggle("hl", has(e, "data-hl")));
+    s.querySelectorAll("[data-dim]").forEach((e) => e.classList.toggle("dim", has(e, "data-dim")));
     const m = mods[s.id]; if (m && m.step) m.step(step, entering);
   }
   function go(i, toEnd) {
-    const prevMod = mods[slides[cur].id]; if (prevMod && prevMod.leave && i !== cur) prevMod.leave();
+    const pm = mods[slides[cur].id]; if (pm && pm.leave && i !== cur) pm.leave();
     cur = Math.max(0, Math.min(slides.length - 1, i));
     const s = slides[cur];
     step = toEnd ? nSteps(s) - 1 : 0;
@@ -1230,7 +1327,7 @@ window.EXP = {
   window.__deck = { next, setStep(k) { step = k; apply(true); }, refresh() { apply(true); } };
 
   function fit() { const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080); deck.style.transform = `translate(-50%, -50%) scale(${s})`; }
-  function rebuildThemed() { readColors(); buildUse(); buildOld(); buildNovel(); buildArch(); buildResults(); buildConcl(); mods.loss.rebuild(); mods.degrade.rebuild(); apply(true); }
+  function rebuildThemed() { readColors(); buildBg(); buildCmp(); buildWhy(); buildArch(); buildResults(); mods.loss.rebuild(); mods.degrade.rebuild(); apply(true); }
   function toggleTheme() {
     const r = document.documentElement;
     const dark = r.dataset.theme === "dark" || (!r.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
@@ -1262,11 +1359,12 @@ window.EXP = {
 
   function loop(t) { const m = mods[slides[cur].id]; if (m && m.frame) m.frame(t); requestAnimationFrame(loop); }
 
-  /* ------------------------------------------------------------ 시작 (글꼴을 기다렸다가 캔버스를 그림) */
   function start() {
     buildImages();
+    mods.cover = makeCover($("cv-cover"), 1);
+    mods.thanks = makeCover($("cv-end"), 0.72);
     mods.decoder.init();
-    buildUse(); buildOld(); buildNovel(); buildArch(); buildAug(); buildResults(); buildConcl();
+    buildBg(); buildCmp(); buildWhy(); buildArch(); buildAug(); buildResults();
     mods.loss.init(); metric(); buildExp(); mods.degrade.init();
     fit();
     const m0 = location.hash.match(/^#s(\d+)$/);
