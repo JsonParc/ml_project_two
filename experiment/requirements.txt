@@ -1,0 +1,8 @@
+# Python 3.10-3.12 recommended; requires separate Tesseract 5 installation.
+pillow>=10,<12
+numpy>=1.26,<3
+pytesseract>=0.3.10,<0.4
+transformers>=4.40,<5
+sentencepiece>=0.2
+safetensors>=0.4
+torch>=2.2

@@ -37,6 +37,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
 html, body { height: 100%; }
 body { background: var(--stage); overflow: hidden; font: 500 32px/1.45 var(--font); color: var(--ink); word-break: keep-all; font-variant-numeric: tabular-nums; }
 #deck { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; background: var(--paper); transform-origin: center; overflow: hidden; }
@@ -281,6 +282,9 @@ span.D { color: var(--bad); font-weight: 900; }
 .legend { display: flex; gap: 28px; font-size: 20px; font-weight: 700; color: var(--sub); }
 .legend i { display: inline-block; width: 26px; height: 6px; border-radius: 3px; margin-right: 8px; vertical-align: middle; }
 
+.slide.active .on .rowin, .slide.active .on.rowin { animation: rowin .45s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--i, 0s); }
+@keyframes rowin { from { opacity: 0; transform: translateX(-24px); } }
+.case { margin-left: auto; flex: none; }
 /* 20 정리 */
 .sum { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 56px 80px; counter-reset: q; }
 .sum li { counter-increment: q; position: relative; padding-left: 88px; font-size: 30px; }
@@ -306,7 +310,7 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
 @media (prefers-reduced-motion: reduce) {
   [data-at], [data-only], [data-dim], .stop { transition: none; }
   .draw { stroke-dashoffset: 0; animation: none !important; }
-  .bar-h, .chip.new, .pipe .loop { animation: none !important; }
+  .bar-h, .chip.new, .pipe .loop, .rowin { animation: none !important; }
   .packet { display: none; }
 }
 </style>
@@ -364,13 +368,13 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
       <h3>수업 내용과 연결되는 부분</h3>
       <table class="t">
         <tr><th>수업 개념</th><th>논문에서</th></tr>
-        <tr><td>CNN, RNN</td><td>기존 OCR의 특징 추출·문맥 처리 (비교 대상)</td></tr>
-        <tr><td>Attention, Transformer</td><td>인코더·디코더 전체 구조</td></tr>
-        <tr><td>전이학습</td><td>공개 사전학습 가중치로 시작 + 2단계 사전학습</td></tr>
-        <tr><td>손실함수, 역전파</td><td>토큰별 교차 엔트로피로 인코더·디코더 함께 학습</td></tr>
-        <tr><td>과적합 방지</td><td>회전·블러 등 6가지 데이터 증강</td></tr>
-        <tr><td>성능 평가</td><td>CER, F1, 단어 정확도</td></tr>
-        <tr><td>이미지 처리 (블러, 잡음)</td><td>한계 극복 아이디어 (6부)</td></tr>
+        <tr class="rowin" style="--i:0.00s"><td>CNN, RNN</td><td>기존 OCR의 특징 추출·문맥 처리 (비교 대상)</td></tr>
+        <tr class="rowin" style="--i:0.08s"><td>Attention, Transformer</td><td>인코더·디코더 전체 구조</td></tr>
+        <tr class="rowin" style="--i:0.16s"><td>전이학습</td><td>공개 사전학습 가중치로 시작 + 2단계 사전학습</td></tr>
+        <tr class="rowin" style="--i:0.24s"><td>손실함수, 역전파</td><td>토큰별 교차 엔트로피로 인코더·디코더 함께 학습</td></tr>
+        <tr class="rowin" style="--i:0.32s"><td>과적합 방지</td><td>회전·블러 등 6가지 데이터 증강</td></tr>
+        <tr class="rowin" style="--i:0.40s"><td>성능 평가</td><td>CER, F1, 단어 정확도</td></tr>
+        <tr class="rowin" style="--i:0.48s"><td>이미지 처리 (블러, 잡음)</td><td>한계 극복 아이디어 (6부)</td></tr>
       </table>
     </div>
   </div>
@@ -393,10 +397,10 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
   <svg id="cmp-svg" viewBox="0 0 1680 290" style="width:1680px;height:290px" aria-label="기존 네 단계 파이프라인과 TrOCR 두 단계 구조 비교"></svg>
   <table class="t" data-at="2" style="font-size:23px">
     <tr><th></th><th>기존 (CNN + RNN + CTC)</th><th>TrOCR</th></tr>
-    <tr><td><b>이미지 이해</b></td><td>CNN 특징 지도</td><td class="enc-t">이미지 Transformer, 16×16 패치 입력</td></tr>
-    <tr><td><b>글자 생성</b></td><td>RNN + CTC, 문자 단위</td><td class="dec-t">텍스트 Transformer, wordpiece 단위 자기회귀</td></tr>
-    <tr><td><b>시작 가중치</b></td><td>사전학습 모델 활용 적음</td><td>BEiT·DeiT / RoBERTa·MiniLM 사전학습 가중치</td></tr>
-    <tr><td><b>언어 지식</b></td><td>외부 언어모델로 후처리</td><td>디코더에 포함, 외부 언어모델 없음</td></tr>
+    <tr class="rowin" style="--i:0.00s"><td><b>이미지 이해</b></td><td>CNN 특징 지도</td><td class="enc-t">이미지 Transformer, 16×16 패치 입력</td></tr>
+    <tr class="rowin" style="--i:0.08s"><td><b>글자 생성</b></td><td>RNN + CTC, 문자 단위</td><td class="dec-t">텍스트 Transformer, wordpiece 단위 자기회귀</td></tr>
+    <tr class="rowin" style="--i:0.16s"><td><b>시작 가중치</b></td><td>사전학습 모델 활용 적음</td><td>BEiT·DeiT / RoBERTa·MiniLM 사전학습 가중치</td></tr>
+    <tr class="rowin" style="--i:0.24s"><td><b>언어 지식</b></td><td>외부 언어모델로 후처리</td><td>디코더에 포함, 외부 언어모델 없음</td></tr>
   </table>
 </section>
 
@@ -404,10 +408,10 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
 <section class="slide" id="novelty" data-part="2" data-steps="4">
   <h2>독창성</h2>
   <div class="figs">
-    <div data-at="0"><div class="fig-n">2<small>Transformer</small></div><div><h3>사전학습 Transformer만으로 구성</h3><p class="sm">이미지 Transformer 인코더 + 텍스트 Transformer 디코더. CNN 백본과 RNN 없음. 사전학습된 이미지·텍스트 Transformer를 함께 쓴 첫 OCR 연구 (논문 주장)</p></div></div>
-    <div data-at="1"><div class="fig-n">0<small>외부 언어모델</small></div><div><h3>외부 언어모델 없이 인식</h3><p class="sm">디코더를 텍스트 사전학습 모델(RoBERTa, MiniLM)로 초기화해 언어 지식 포함. 후처리 언어모델 불필요</p></div></div>
-    <div data-at="2"><div class="fig-n">6.84억<small>줄</small></div><div><h3>대규모 합성 데이터 사전학습</h3><p class="sm">1단계: 공개 PDF 200만 페이지에서 만든 인쇄체 텍스트 줄. 2단계: 손글씨·인쇄체·장면 글자 과제별 합성 데이터</p></div></div>
-    <div data-at="3"><div class="fig-n">1<small>구조</small></div><div><h3>세 종류 글자에 같은 구조</h3><p class="sm">모델 구조 변경 없이 데이터별 Fine-tuning만으로 인쇄체·손글씨·장면 글자 벤치마크에 적용</p></div></div>
+    <div data-at="0"><div class="fig-n"><span data-count="2">2</span><small>Transformer</small></div><div><h3>사전학습 Transformer만으로 구성</h3><p class="sm">이미지 Transformer 인코더 + 텍스트 Transformer 디코더. CNN 백본과 RNN 없음. 사전학습된 이미지·텍스트 Transformer를 함께 쓴 첫 OCR 연구 (논문 주장)</p></div></div>
+    <div data-at="1"><div class="fig-n"><span data-count="0">0</span><small>외부 언어모델</small></div><div><h3>외부 언어모델 없이 인식</h3><p class="sm">디코더를 텍스트 사전학습 모델(RoBERTa, MiniLM)로 초기화해 언어 지식 포함. 후처리 언어모델 불필요</p></div></div>
+    <div data-at="2"><div class="fig-n"><span data-count="6.84" data-dec="2">6.84</span>억<small>줄</small></div><div><h3>대규모 합성 데이터 사전학습</h3><p class="sm">1단계: 공개 PDF 200만 페이지에서 만든 인쇄체 텍스트 줄. 2단계: 손글씨·인쇄체·장면 글자 과제별 합성 데이터</p></div></div>
+    <div data-at="3"><div class="fig-n"><span data-count="1">1</span><small>구조</small></div><div><h3>세 종류 글자에 같은 구조</h3><p class="sm">모델 구조 변경 없이 데이터별 Fine-tuning만으로 인쇄체·손글씨·장면 글자 벤치마크에 적용</p></div></div>
   </div>
 </section>
 
@@ -416,9 +420,9 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
   <h2>TrOCR 구조</h2>
   <svg id="arch-svg" viewBox="0 0 1680 500" style="width:1680px;height:500px" aria-label="입력 이미지가 패치로 나뉘어 인코더와 디코더를 거쳐 텍스트가 되는 구조도"></svg>
   <div class="row" data-at="4" style="gap:24px;flex-wrap:nowrap">
-    <div class="panel" style="flex:1"><span class="tag">TrOCR-Small · 62M</span><p class="sm">DeiT-Small 인코더 + MiniLM 디코더</p></div>
-    <div class="panel" style="flex:1"><span class="tag">TrOCR-Base · 334M</span><p class="sm">BEiT-Base 인코더 + RoBERTa-Large 디코더</p></div>
-    <div class="panel" style="flex:1"><span class="tag">TrOCR-Large · 558M</span><p class="sm">BEiT-Large 인코더 + RoBERTa-Large 디코더</p></div>
+    <div class="panel" style="flex:1"><span class="tag">TrOCR-Small · <span data-count="62">62</span>M</span><p class="sm">DeiT-Small 인코더 + MiniLM 디코더</p></div>
+    <div class="panel" style="flex:1"><span class="tag">TrOCR-Base · <span data-count="334">334</span>M</span><p class="sm">BEiT-Base 인코더 + RoBERTa-Large 디코더</p></div>
+    <div class="panel" style="flex:1"><span class="tag">TrOCR-Large · <span data-count="558">558</span>M</span><p class="sm">BEiT-Large 인코더 + RoBERTa-Large 디코더</p></div>
   </div>
   <p class="foot">파라미터 수와 초기화 모델: Li et al., Table 5 및 실험 설정 (arXiv:2109.10282v5)</p>
 </section>
@@ -510,8 +514,8 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
     <div class="pn back" data-at="1" style="left:1470px;top:290px"><i>8</i><b>역전파·갱신</b><p>기울기 계산 후 인코더·디코더 파라미터 함께 갱신</p></div>
     <p class="loop-l" data-at="2" style="left:840px;top:548px">파라미터 갱신 후 다음 배치로 반복</p>
     <dl class="settings" data-at="3">
-      <div><dt>입력</dt><dd>384 × 384</dd></div><div><dt>배치</dt><dd>2,048</dd></div><div><dt>학습률</dt><dd>5e-5</dd></div>
-      <div><dt>손실</dt><dd>교차 엔트로피</dd></div><div><dt>추론</dt><dd>빔 서치 (빔 10)</dd></div><div><dt>사전학습 장비</dt><dd>V100 32장</dd></div>
+      <div><dt>입력</dt><dd>384 × 384</dd></div><div><dt>배치</dt><dd><span data-count="2048">2,048</span></dd></div><div><dt>학습률</dt><dd>5e-5</dd></div>
+      <div><dt>손실</dt><dd>교차 엔트로피</dd></div><div><dt>추론</dt><dd>빔 서치 (빔 10)</dd></div><div><dt>사전학습 장비</dt><dd>V100 <span data-count="32">32</span>장</dd></div>
     </dl>
   </div>
 </section>
@@ -520,10 +524,10 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
 <section class="slide" id="data" data-part="4" data-steps="2">
   <h2>사전학습 데이터와 데이터 증강</h2>
   <div class="stages" data-at="0">
-    <div class="stage-c"><span class="n">1단계 사전학습</span><p class="big">6.84억 줄</p><p>공개 PDF 문서 200만 페이지에서 만든 인쇄체 텍스트 줄 이미지</p></div>
-    <div class="stage-c"><span class="n">2단계 · 손글씨</span><p class="big">1,790만 줄</p><p>손글씨 폰트 5,427종으로 합성 (TRDG), Wikipedia 문장</p></div>
-    <div class="stage-c"><span class="n">2단계 · 인쇄체</span><p class="big">330만 줄</p><p>실제 영수증 약 5.3만 장 (상용 OCR로 정답 생성) + 합성 인쇄체</p></div>
-    <div class="stage-c"><span class="n">2단계 · 장면 글자</span><p class="big">약 1,600만</p><p>MJSynth + SynthText 합성 단어 이미지</p></div>
+    <div class="stage-c rowin" style="--i:0.00s"><span class="n">1단계 사전학습</span><p class="big"><span data-count="6.84" data-dec="2">6.84</span>억 줄</p><p>공개 PDF 문서 200만 페이지에서 만든 인쇄체 텍스트 줄 이미지</p></div>
+    <div class="stage-c rowin" style="--i:0.15s"><span class="n">2단계 · 손글씨</span><p class="big"><span data-count="1790">1,790</span>만 줄</p><p>손글씨 폰트 5,427종으로 합성 (TRDG), Wikipedia 문장</p></div>
+    <div class="stage-c rowin" style="--i:0.30s"><span class="n">2단계 · 인쇄체</span><p class="big"><span data-count="330">330</span>만 줄</p><p>실제 영수증 약 5.3만 장 (상용 OCR로 정답 생성) + 합성 인쇄체</p></div>
+    <div class="stage-c rowin" style="--i:0.45s"><span class="n">2단계 · 장면 글자</span><p class="big">약 <span data-count="1600">1,600</span>만</p><p>MJSynth + SynthText 합성 단어 이미지</p></div>
   </div>
   <div class="stack" data-at="1" style="gap:16px">
     <div class="row" style="justify-content:space-between"><h3 style="margin:0">데이터 증강 (인쇄체·손글씨)</h3><span class="badge concept">브라우저에서 재현한 예시</span></div>
@@ -557,9 +561,9 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
   <h2>평가 방법</h2>
   <table class="t" data-at="0" style="font-size:24px">
     <tr><th>데이터</th><th>종류</th><th>평가 지표</th></tr>
-    <tr><td><b>SROIE</b></td><td>영수증 인쇄체 (ICDAR 2019)</td><td>단어 단위 정밀도 · 재현율 · F1</td></tr>
-    <tr><td><b>IAM</b></td><td>영어 손글씨 문장</td><td>CER (문자 오류율, 대소문자 구분)</td></tr>
-    <tr><td><b>장면 글자 8종</b></td><td>간판·거리 사진 속 단어</td><td>단어 정확도</td></tr>
+    <tr class="rowin" style="--i:0.00s"><td><b>SROIE</b></td><td>영수증 인쇄체 (ICDAR 2019)</td><td>단어 단위 정밀도 · 재현율 · F1</td></tr>
+    <tr class="rowin" style="--i:0.08s"><td><b>IAM</b></td><td>영어 손글씨 문장</td><td>CER (문자 오류율, 대소문자 구분)</td></tr>
+    <tr class="rowin" style="--i:0.16s"><td><b>장면 글자 8종</b></td><td>간판·거리 사진 속 단어</td><td>단어 정확도</td></tr>
   </table>
   <div class="split" style="--l:1040px;gap:56px">
     <div class="stack" data-at="1" style="gap:18px">
@@ -591,10 +595,10 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
     <div class="stack" data-at="1">
       <h3>단계별 차이</h3>
       <table class="t" style="font-size:24px">
-        <tr><td>사전학습 모델로 초기화</td><td class="num"><b>+34.51</b></td></tr>
-        <tr><td>데이터 증강 추가</td><td class="num"><b>+9.55</b></td></tr>
-        <tr><td>1단계 사전학습 추가</td><td class="num"><b>+13.18</b></td></tr>
-        <tr><td>2단계 사전학습 추가</td><td class="num"><b>+0.36</b></td></tr>
+        <tr class="rowin" style="--i:0.00s"><td>사전학습 모델로 초기화</td><td class="num"><b>+<span data-count="34.51" data-dec="2">34.51</span></b></td></tr>
+        <tr class="rowin" style="--i:0.08s"><td>데이터 증강 추가</td><td class="num"><b>+<span data-count="9.55" data-dec="2">9.55</span></b></td></tr>
+        <tr class="rowin" style="--i:0.16s"><td>1단계 사전학습 추가</td><td class="num"><b>+<span data-count="13.18" data-dec="2">13.18</span></b></td></tr>
+        <tr class="rowin" style="--i:0.24s"><td>2단계 사전학습 추가</td><td class="num"><b>+<span data-count="0.36" data-dec="2">0.36</span></b></td></tr>
       </table>
       <p class="sm muted">앞 단계를 모두 포함한 누적 결과. 단계별 차이를 각 기법의 독립적인 효과로 해석하지 않음</p>
     </div>
@@ -613,14 +617,14 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
     <div class="stack" data-at="1">
       <h3>SROIE 영수증 <span class="muted" style="font-size:22px">F1 %</span></h3>
       <table class="t" style="font-size:23px">
-        <tr class="me"><td>TrOCR-Large</td><td class="num">96.58</td></tr>
-        <tr><td>H&amp;H Lab (대회 1위)</td><td class="num">96.43</td></tr>
-        <tr><td>TrOCR-Base</td><td class="num">96.34</td></tr>
-        <tr><td>TrOCR-Small</td><td class="num">95.82</td></tr>
-        <tr><td>MSOLab</td><td class="num">94.82</td></tr>
-        <tr><td>CLOVA OCR</td><td class="num">94.59</td></tr>
-        <tr><td>Tesseract</td><td class="num">54.57</td></tr>
-        <tr><td>CRNN</td><td class="num">36.09</td></tr>
+        <tr class="me rowin" style="--i:0.00s"><td>TrOCR-Large</td><td class="num"><span data-count="96.58" data-dec="2">96.58</span></td></tr>
+        <tr class="rowin" style="--i:0.08s"><td>H&amp;H Lab (대회 1위)</td><td class="num"><span data-count="96.43" data-dec="2">96.43</span></td></tr>
+        <tr class="rowin" style="--i:0.16s"><td>TrOCR-Base</td><td class="num"><span data-count="96.34" data-dec="2">96.34</span></td></tr>
+        <tr class="rowin" style="--i:0.24s"><td>TrOCR-Small</td><td class="num"><span data-count="95.82" data-dec="2">95.82</span></td></tr>
+        <tr class="rowin" style="--i:0.32s"><td>MSOLab</td><td class="num"><span data-count="94.82" data-dec="2">94.82</span></td></tr>
+        <tr class="rowin" style="--i:0.40s"><td>CLOVA OCR</td><td class="num"><span data-count="94.59" data-dec="2">94.59</span></td></tr>
+        <tr class="rowin" style="--i:0.48s"><td>Tesseract</td><td class="num"><span data-count="54.57" data-dec="2">54.57</span></td></tr>
+        <tr class="rowin" style="--i:0.56s"><td>CRNN</td><td class="num"><span data-count="36.09" data-dec="2">36.09</span></td></tr>
       </table>
     </div>
   </div>
@@ -630,11 +634,11 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
 <!-- ================================================================ 17 한계 -->
 <section class="slide" id="limit" data-part="6" data-steps="2">
   <h2>논문의 한계</h2>
-  <div class="grid2">
-    <div class="lim"><i>1</i><div><h3 data-hl="1">촬영 품질 변화에 대한 분석 없음</h3><p class="sm">벤치마크 이미지 기준 평가. 흐림·기울기·잡음 정도에 따른 성능 변화는 따로 분석하지 않음</p></div></div>
-    <div class="lim" data-dim="1"><i>2</i><div><h3>텍스트 검출 미포함</h3><p class="sm">잘라 낸 한 줄 이미지만 입력. 문서·시험지 전체를 읽으려면 별도 검출 모델 필요</p></div></div>
-    <div class="lim" data-dim="1"><i>3</i><div><h3>큰 모델과 느린 추론</h3><p class="sm">Base 334M 파라미터. IAM 2,915문장 기준 초당 4.60문장 (Small 8.37문장)</p></div></div>
-    <div class="lim" data-dim="1"><i>4</i><div><h3>영어 중심 공개 모델</h3><p class="sm">공개 모델은 영어 데이터·토크나이저로 학습. 한국어 등은 다시 학습 필요</p></div></div>
+  <div class="grid2" data-at="0">
+    <div class="lim rowin" style="--i:0.00s"><i>1</i><div><h3 data-hl="1">촬영 품질 변화에 대한 분석 없음</h3><p class="sm">벤치마크 이미지 기준 평가. 흐림·기울기·잡음 정도에 따른 성능 변화는 따로 분석하지 않음</p></div></div>
+    <div class="lim rowin" style="--i:0.15s" data-dim="1"><i>2</i><div><h3>텍스트 검출 미포함</h3><p class="sm">잘라 낸 한 줄 이미지만 입력. 문서·시험지 전체를 읽으려면 별도 검출 모델 필요</p></div></div>
+    <div class="lim rowin" style="--i:0.30s" data-dim="1"><i>3</i><div><h3>큰 모델과 느린 추론</h3><p class="sm">Base 334M 파라미터. IAM 2,915문장 기준 초당 4.60문장 (Small 8.37문장)</p></div></div>
+    <div class="lim rowin" style="--i:0.45s" data-dim="1"><i>4</i><div><h3>영어 중심 공개 모델</h3><p class="sm">공개 모델은 영어 데이터·토크나이저로 학습. 한국어 등은 다시 학습 필요</p></div></div>
   </div>
   <div class="panel" data-at="1">
     <h3>1번에 대한 극복 아이디어</h3>
@@ -664,7 +668,7 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
 <!-- ================================================================ 19 공개 모델 비교 -->
 <section class="slide" id="exp" data-label="추가" data-steps="2" style="gap:24px">
   <div class="row" style="justify-content:space-between"><h2>공개 모델로 직접 비교</h2><span class="badge warn" id="exp-badge" hidden>TrOCR 미측정</span></div>
-  <div class="row sm" id="exp-setup" style="gap:8px 32px"></div>
+  <div class="row sm" style="gap:8px 32px;flex-wrap:nowrap"><div class="row" id="exp-setup" style="gap:8px 32px"></div><button class="btn case" id="exp-case" type="button">대소문자 구분: 켬</button></div>
   <table class="t exp" id="exp-table" data-at="0"></table>
   <div class="score" id="exp-sum" data-at="1"></div>
 </section>
@@ -675,7 +679,7 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
   <ol class="sum">
     <li data-at="0"><h3>문제</h3><p class="sm">기존 OCR은 CNN·RNN·외부 언어모델을 따로 설계하고, 대규모 사전학습 모델을 거의 쓰지 않음</p></li>
     <li data-at="1"><h3>방법</h3><p class="sm">사전학습 이미지 Transformer + 텍스트 Transformer 인코더-디코더. 2단계 합성 데이터 사전학습 후 Fine-tuning, 교차 엔트로피 학습</p></li>
-    <li data-at="2"><h3>결과</h3><p class="sm">SROIE F1 96.58, IAM CER 2.89 (Large). 사전학습·증강 누적 시 SROIE F1 38.24 → 95.84</p></li>
+    <li data-at="2"><h3>결과</h3><p class="sm">SROIE F1 <span data-count="96.58" data-dec="2">96.58</span>, IAM CER <span data-count="2.89" data-dec="2">2.89</span> (Large). 사전학습·증강 누적 시 SROIE F1 <span data-count="38.24" data-dec="2">38.24</span> → <span data-count="95.84" data-dec="2">95.84</span></p></li>
     <li data-at="3"><h3>의의</h3><p class="sm">구조 변경 없이 전이학습만으로 인쇄체·손글씨·장면 글자 인식. 검출과 문제 풀이는 별도 모델의 역할</p></li>
   </ol>
 </section>
@@ -719,9 +723,9 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
   <h2>모델 크기와 추론 속도</h2>
   <table class="t">
     <tr><th>모델</th><th>인코더</th><th>디코더</th><th class="num">파라미터</th><th class="num">IAM 전체 시간</th><th class="num">문장/초</th><th class="num">토큰/초</th></tr>
-    <tr><td><b>TrOCR-Small</b></td><td>DeiT-Small</td><td>MiniLM</td><td class="num">62M</td><td class="num">348.4초</td><td class="num">8.37</td><td class="num">89.22</td></tr>
-    <tr><td><b>TrOCR-Base</b></td><td>BEiT-Base</td><td>RoBERTa-Large</td><td class="num">334M</td><td class="num">633.7초</td><td class="num">4.60</td><td class="num">50.43</td></tr>
-    <tr><td><b>TrOCR-Large</b></td><td>BEiT-Large</td><td>RoBERTa-Large</td><td class="num">558M</td><td class="num">666.8초</td><td class="num">4.37</td><td class="num">47.94</td></tr>
+    <tr class="rowin" style="--i:0.00s"><td><b>TrOCR-Small</b></td><td>DeiT-Small</td><td>MiniLM</td><td class="num"><span data-count="62" data-dec="0">62</span>M</td><td class="num"><span data-count="348.4" data-dec="1">348.4</span>초</td><td class="num"><span data-count="8.37" data-dec="2">8.37</span></td><td class="num"><span data-count="89.22" data-dec="2">89.22</span></td></tr>
+    <tr class="rowin" style="--i:0.08s"><td><b>TrOCR-Base</b></td><td>BEiT-Base</td><td>RoBERTa-Large</td><td class="num"><span data-count="334" data-dec="0">334</span>M</td><td class="num"><span data-count="633.7" data-dec="1">633.7</span>초</td><td class="num"><span data-count="4.60" data-dec="2">4.60</span></td><td class="num"><span data-count="50.43" data-dec="2">50.43</span></td></tr>
+    <tr class="rowin" style="--i:0.16s"><td><b>TrOCR-Large</b></td><td>BEiT-Large</td><td>RoBERTa-Large</td><td class="num"><span data-count="558" data-dec="0">558</span>M</td><td class="num"><span data-count="666.8" data-dec="1">666.8</span>초</td><td class="num"><span data-count="4.37" data-dec="2">4.37</span></td><td class="num"><span data-count="47.94" data-dec="2">47.94</span></td></tr>
   </table>
   <p class="sm muted">IAM 테스트 2,915문장 기준. Base와 Large는 속도 차이가 작고 Small은 약 2배 빠름</p>
   <p class="foot">출처: Li et al., Table 5 (arXiv:2109.10282v5)</p>
@@ -738,32 +742,36 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
    - 예측 문자열이 null 이면 "미측정"으로 표시 (빈 문자열 ""은 아무것도 읽지 못한 것 = CER 100%)
    - img: site/ 기준 이미지 경로. 파일이 없으면 같은 조건을 브라우저에서 그린 이미지로 대신 보여줌
    - CER/WER은 정답과 예측 문자열로 자동 계산 (대소문자·공백·구두점 그대로)
-   Tesseract 값: 실측 (Tesseract 5.5.0, --psm 7, individual_results.csv)
+   Tesseract 값: 실측 (Tesseract 5.5.0, --psm 7, experiment/results/individual_results.csv)
+   TrOCR 값: 실측 (로컬 CPU, transformers 4.57, experiment/run_trocr_local.py → results_with_trocr.json)
    ================================================================ */
 window.EXP = {
   engines: {
     tess:  { name: "Tesseract", detail: "Tesseract 5.5.0 (--psm 7)" },
-    trocr: { name: "TrOCR", detail: "microsoft/trocr-small-printed (탐욕적 디코딩)" }
+    trocr: { name: "TrOCR", detail: "microsoft/trocr-small-printed (탐욕적 디코딩, CPU)" }
   },
-  note: "합성 인쇄체 한 줄 이미지 8장 · 대소문자·공백·구두점 그대로 비교",
+  note: "합성 인쇄체 한 줄 이미지 8장 · 두 모델에 같은 PNG 입력",
   samples: [
-    { id: "s01", kind: "영수증 합계",     gt: "TOTAL 12.50",              tess: "TOTAL 12.50",              trocr: null },
-    { id: "s02", kind: "잡음 영수증",     gt: "CASH CHANGE 7.50",         tess: "CASH CHANGE 7.50",         trocr: null, noise: 25 },
-    { id: "s03", kind: "기울어진 청구서", gt: "Invoice No. 4821",         tess: "invoice No. 4821",         trocr: null, rotate: 7 },
-    { id: "s04", kind: "흐릿한 문장",     gt: "Reading text from pixels", tess: "Reading text from pixels", trocr: null, blur: 2.2 },
-    { id: "s05", kind: "잡음 안내문",     gt: "PLEASE KEEP YOUR RECEIPT", tess: "PLEASE KEEP YOUR RECEIPT", trocr: null, noise: 45 },
-    { id: "s06", kind: "회전 상품 번호",  gt: "ORDER 2026-11-25",         tess: "over sero?",               trocr: null, rotate: 15 },
-    { id: "s07", kind: "흐릿한 혼합문",   gt: "The Quick Brown Fox",      tess: "The Quick Brown Fox",      trocr: null, blur: 3.2 },
-    { id: "s08", kind: "강한 잡음",       gt: "DATA MATRIX 3.14",         tess: "",                         trocr: null, noise: 60 }
+    { id: "s01", kind: "영수증 합계",     gt: "TOTAL 12.50",              tess: "TOTAL 12.50",              trocr: "TOTAL 12.50" },
+    { id: "s02", kind: "잡음 영수증",     gt: "CASH CHANGE 7.50",         tess: "CASH CHANGE 7.50",         trocr: "CASH CHANGE 7.50", noise: 25 },
+    { id: "s03", kind: "기울어진 청구서", gt: "Invoice No. 4821",         tess: "invoice No. 4821",         trocr: "INVOICE NO. 4821", rotate: 7 },
+    { id: "s04", kind: "흐릿한 문장",     gt: "Reading text from pixels", tess: "Reading text from pixels", trocr: "READING TEXT FROM PIXELS", blur: 2.2 },
+    { id: "s05", kind: "잡음 안내문",     gt: "PLEASE KEEP YOUR RECEIPT", tess: "PLEASE KEEP YOUR RECEIPT", trocr: "PLEASE KEEP YOUR RECEIPT", noise: 45 },
+    { id: "s06", kind: "회전 상품 번호",  gt: "ORDER 2026-11-25",         tess: "over sero?",               trocr: "ORDER 2026-11-25", rotate: 15 },
+    { id: "s07", kind: "흐릿한 혼합문",   gt: "The Quick Brown Fox",      tess: "The Quick Brown Fox",      trocr: "THE QUICK BROWN FOX", blur: 3.2 },
+    { id: "s08", kind: "강한 잡음",       gt: "DATA MATRIX 3.14",         tess: "",                         trocr: "DATA MATRIX 3.14", noise: 60 }
   ],
   degrade: {
     text: "TOTAL 12.50",
     blur:   { name: "흐림", unit: "px", levels: [0, 1, 2, 3, 4],
-              tess:  ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50"], trocr: [null, null, null, null, null] },
+              tess:  ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50"],
+              trocr: ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50"] },
     rotate: { name: "회전", unit: "°", levels: [0, 5, 10, 15, 20],
-              tess:  ["TOTAL 12.50", "TOTAL 12 .50", "TOTAL 12.50", "ott 3? as", "or 28"], trocr: [null, null, null, null, null] },
+              tess:  ["TOTAL 12.50", "TOTAL 12 .50", "TOTAL 12.50", "ott 3? as", "or 28"],
+              trocr: ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50"] },
     noise:  { name: "잡음", unit: "σ", levels: [0, 15, 30, 45, 60],
-              tess:  ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", ""], trocr: [null, null, null, null, null] }
+              tess:  ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", ""],
+              trocr: ["TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50", "TOTAL 12.50"] }
   }
 };
 </script>
@@ -812,12 +820,18 @@ window.EXP = {
     return { dist: d[n][m], ops, cnt, n };
   }
   const words = (s) => s.trim().split(/\s+/).filter(Boolean);
-  const cer = (g, p) => { const r = align([...g], [...p]); return r.n ? r.dist / r.n : 0; };
   const fmtPct = (v) => (v * 100).toFixed(1) + "%";
-  function diffHTML(g, p) {
+  /* ci = true 이면 대소문자 무시 (표시는 원래 글자 그대로) */
+  const low = (s, ci) => (ci ? [...s.toLowerCase()] : [...s]);
+  function diffHTML(g, p, ci) {
     if (p === "") return '<span class="na">(인식 결과 없음)</span>';
-    return align([...g], [...p]).ops.map((o) => o.op === "=" ? esc(o.b) : o.op === "S" ? `<mark class="S">${esc(o.b)}</mark>` : o.op === "I" ? `<mark class="I">${esc(o.b)}</mark>` : `<span class="D" title="빠진 글자 ${esc(o.a)}">‸</span>`).join("");
+    const P = [...p]; let j = 0;
+    return align(low(g, ci), low(p, ci)).ops.map((o) => {
+      const b = o.op === "D" ? "" : P[j++];
+      return o.op === "=" ? esc(b) : o.op === "S" ? `<mark class="S">${esc(b)}</mark>` : o.op === "I" ? `<mark class="I">${esc(b)}</mark>` : `<span class="D" title="빠진 글자 ${esc(o.a)}">‸</span>`;
+    }).join("");
   }
+  const cer = (g, p, ci) => { const r = align(low(g, ci), low(p, ci)); return r.n ? r.dist / r.n : 0; };
 
   /* ------------------------------------------------------------ 글자 이미지 (사진처럼 보이는 캔버스) */
   const LINE = "Reading text from pixels";
@@ -951,7 +965,7 @@ window.EXP = {
       txt(svg, m.l - 14, y0 + 40, e, { "text-anchor": "end", class: "ct ink", style: "font-weight:800" });
       [[base[i], C.faint], [large[i], i === 2 ? C.enc : C.mid]].forEach(([v, col], k) => {
         const r = el("rect", { x: X(50), y: y0 + k * 36, width: X(v) - X(50), height: 30, rx: 5, fill: col, class: "bar-h" }, svg); r.style.setProperty("--d", (i * 0.15 + k * 0.08) + "s");
-        txt(svg, X(v) + 8, y0 + k * 36 + 23, v.toFixed(2), { class: "ct small ink", style: "font-weight:800" });
+        txt(svg, X(v) + 8, y0 + k * 36 + 23, v.toFixed(2), { class: "ct small ink", style: "font-weight:800", "data-count": v, "data-dec": 2 });
       });
     });
     el("rect", { x: m.l, y: 334, width: 18, height: 18, fill: C.faint, rx: 3 }, svg); txt(svg, m.l + 26, 350, "디코더 RoBERTa-Base", { class: "ct small" });
@@ -1194,7 +1208,7 @@ window.EXP = {
         const y = m.t + i * (bh + gap);
         txt(svg, m.l - 16, y + bh / 2 + 8, n, { "text-anchor": "end", class: "ct ink", style: "font-weight:700;font-size:23px" });
         const b = el("rect", { x: X(0), y, width: X(v) - X(0), height: bh, rx: 6, fill: i === 4 ? C.enc : i === 0 ? C.faint : C.mid, class: "bar-h go" }, svg); b.style.setProperty("--d", i * 0.18 + "s");
-        txt(svg, X(v) + 10, y + bh / 2 + 9, v.toFixed(2), { class: "ct ink", style: "font-weight:800;font-size:25px" });
+        txt(svg, X(v) + 10, y + bh / 2 + 9, v.toFixed(2), { class: "ct ink", style: "font-weight:800;font-size:25px", "data-count": v, "data-dec": 2 });
         if (i > 0) {
           const g = el("g", { "data-at": 1 }, svg);
           el("rect", { x: X(rows[i - 1][1]), y: y + 4, width: X(v) - X(rows[i - 1][1]), height: bh - 8, fill: "none", stroke: C.hl, "stroke-width": 4, rx: 4 }, g);
@@ -1211,7 +1225,7 @@ window.EXP = {
         txt(svg, m.l - 12, y + 23, n, { "text-anchor": "end", class: "ct small " + (kind === 1 ? "ink" : ""), style: kind === 1 ? "font-weight:800" : "" });
         const b = el("rect", { x: X(0), y, width: X(v) - X(0), height: bh, rx: 5, fill: kind === 1 ? (i === 0 ? C.enc : C.mid) : C.faint, class: "bar-h" }, svg); b.style.setProperty("--d", i * 0.12 + "s");
         if (kind === 2) b.setAttribute("fill-opacity", ".55");
-        txt(svg, X(v) + 8, y + 23, v.toFixed(2), { class: "ct small ink", style: "font-weight:800" });
+        txt(svg, X(v) + 8, y + 23, v.toFixed(2), { class: "ct small ink", style: "font-weight:800", "data-count": v, "data-dec": 2 });
       });
       txt(svg, 0, H - 8, "TrOCR는 합성 데이터 + IAM만 사용, 외부 언어모델 없음", { class: "ct small" });
     }
@@ -1240,22 +1254,38 @@ window.EXP = {
   }
   const ENG = ["tess", "trocr"];
   const measured = (k) => window.EXP.samples.some((s) => s[k] != null);
-  function corpus(k) {
+  let caseIgnore = false;
+  function corpus(k, ci) {
     let d = 0, n = 0, wd = 0, wn = 0;
-    window.EXP.samples.forEach((s) => { if (s[k] == null) return; const a = align([...s.gt], [...s[k]]); d += a.dist; n += a.n; const b = align(words(s.gt), words(s[k])); wd += b.dist; wn += b.n; });
+    window.EXP.samples.forEach((s) => {
+      if (s[k] == null) return;
+      const a = align(low(s.gt, ci), low(s[k], ci)); d += a.dist; n += a.n;
+      const g = ci ? s.gt.toLowerCase() : s.gt, q = ci ? s[k].toLowerCase() : s[k];
+      const b = align(words(g), words(q)); wd += b.dist; wn += b.n;
+    });
     return n ? [d / n, wd / wn] : null;
   }
+  const pctSpan = (v) => `<span data-count="${(v * 100).toFixed(1)}" data-dec="1">${(v * 100).toFixed(1)}</span>%`;
   function buildExp() {
-    const E = window.EXP, trocrOK = measured("trocr");
-    $("exp-badge").hidden = trocrOK; $("deg-badge").hidden = E.degrade.blur.trocr.some((v) => v != null);
+    const E = window.EXP, ci = caseIgnore;
+    $("exp-badge").hidden = measured("trocr"); $("deg-badge").hidden = E.degrade.blur.trocr.some((v) => v != null);
+    $("exp-case").textContent = ci ? "대소문자 구분: 끔" : "대소문자 구분: 켬";
+    $("exp-case").classList.toggle("on", ci);
     $("exp-setup").innerHTML = ENG.map((k) => `<span><b>${E.engines[k].name}</b> ${esc(E.engines[k].detail)}</span>`).join("") + `<span class="muted">${esc(E.note)}</span>`;
-    const cell = (s, k) => s[k] == null ? ['<span class="na">미측정</span>', "–"] : [diffHTML(s.gt, s[k]), fmtPct(cer(s.gt, s[k]))];
+    const cell = (s, k) => s[k] == null ? ['<span class="na">미측정</span>', "–"] : [diffHTML(s.gt, s[k], ci), fmtPct(cer(s.gt, s[k], ci))];
     $("exp-table").innerHTML = `<tr><th>입력 이미지</th><th>조건</th><th>정답</th><th>Tesseract</th><th class="num">CER</th><th>TrOCR</th><th class="num">CER</th></tr>` +
-      E.samples.map((s) => { const a = cell(s, "tess"), b = cell(s, "trocr"); return `<tr><td><div id="exp-im-${s.id}"></div></td><td class="kind">${esc(s.kind)}</td><td class="txt">${esc(s.gt)}</td><td class="txt">${a[0]}</td><td class="num">${a[1]}</td><td class="txt">${b[0]}</td><td class="num">${b[1]}</td></tr>`; }).join("");
+      E.samples.map((s, i) => { const a = cell(s, "tess"), b = cell(s, "trocr"); return `<tr class="rowin" style="--i:${(i * 0.09).toFixed(2)}s"><td><div id="exp-im-${s.id}"></div></td><td class="kind">${esc(s.kind)}</td><td class="txt">${esc(s.gt)}</td><td class="txt">${a[0]}</td><td class="num">${a[1]}</td><td class="txt">${b[0]}</td><td class="num">${b[1]}</td></tr>`; }).join("");
     E.samples.forEach((s) => imageOr($("exp-im-" + s.id), s.img || `img/${s.id}.png`, "thumb", (c) => degradeCanvas(c, s.gt, s, 220, 38)));
-    const pan = (k) => { const r = corpus(k); const name = E.engines[k].name; return r ? `<div class="panel"><div class="k">${name} 전체 CER</div><div class="v">${fmtPct(r[0])}</div></div><div class="panel"><div class="k">${name} 전체 WER</div><div class="v">${fmtPct(r[1])}</div></div>` : `<div class="panel"><div class="k">${name}</div><div class="v na" style="font-size:36px">미측정</div></div>`; };
-    $("exp-sum").innerHTML = pan("tess") + pan("trocr") + `<p class="xs muted" style="align-self:center;max-width:440px">전체 = 편집 횟수 합 ÷ 정답 글자(단어) 수 합. n = 8 합성 이미지로, 일반적인 성능 비교 근거는 아님</p>`;
+    const pan = (k) => {
+      const r = corpus(k, ci), name = E.engines[k].name;
+      return r ? `<div class="panel"><div class="k">${name} 전체 CER</div><div class="v">${pctSpan(r[0])}</div></div><div class="panel"><div class="k">${name} 전체 WER</div><div class="v">${pctSpan(r[1])}</div></div>`
+               : `<div class="panel"><div class="k">${name}</div><div class="v na" style="font-size:36px">미측정</div></div>`;
+    };
+    $("exp-sum").innerHTML = pan("tess") + pan("trocr") + `<p class="xs muted" style="align-self:center;max-width:470px">${ci
+      ? "대소문자 무시: TrOCR 오류 0개. 틀린 글자는 모두 대문자 출력 때문 (영수증 SROIE로 Fine-tuning된 모델이라 추정)"
+      : "TrOCR 오류는 모두 대소문자 차이 (모든 글자를 대문자로 출력). 오른쪽 위 버튼으로 대소문자 무시 비교"}. n = 8 합성 이미지</p>`;
   }
+  $("exp-case").addEventListener("click", () => { caseIgnore = !caseIgnore; buildExp(); window.__deck.refresh(); });
   mods.degrade = (function () {
     let f = "rotate";
     const tabs = $("deg-tabs"), sl = $("deg-lv");
@@ -1293,6 +1323,22 @@ window.EXP = {
     return { init, rebuild: render };
   })();
 
+  /* ------------------------------------------------------------ 숫자가 올라가는 효과 (data-count, data-dec) */
+  const fmtCount = (e, v) => { const d = +(e.dataset.dec || 0); return v.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }); };
+  function countUp(e) {
+    const target = +e.dataset.count;
+    if (reduce || target === 0) { e.textContent = fmtCount(e, target); return; }
+    const t0 = performance.now(), dur = 1200, id = (e._cid = (e._cid || 0) + 1);
+    const tick = () => {
+      if (e._cid !== id) return;
+      const f = clamp((performance.now() - t0) / dur);
+      e.textContent = fmtCount(e, target * (1 - Math.pow(1 - f, 3)));
+      if (f < 1 && e.isConnected) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    setTimeout(() => { if (e._cid === id && e.dataset.done) e.textContent = fmtCount(e, target); }, dur + 150);
+  }
+
   /* ================================================================ 슬라이드 엔진 (ML_project와 같은 조작) */
   const SCRIPT_URL = "https://ml-scrpit-two.onrender.com/";   // 대본 사이트 (JsonParc/ml_scrpit_two)
   let cur = 0, step = 0;
@@ -1305,10 +1351,17 @@ window.EXP = {
     s.querySelectorAll("[data-only]").forEach((e) => e.classList.toggle("on", has(e, "data-only")));
     s.querySelectorAll("[data-hl]").forEach((e) => e.classList.toggle("hl", has(e, "data-hl")));
     s.querySelectorAll("[data-dim]").forEach((e) => e.classList.toggle("dim", has(e, "data-dim")));
+    s.querySelectorAll("[data-count]").forEach((e) => {
+      const gate = e.closest("[data-at], [data-only]");
+      const visible = !gate || gate.classList.contains("on");
+      if (visible && !e.dataset.done) { e.dataset.done = "1"; countUp(e); }
+      if (!visible) { e.dataset.done = ""; e.textContent = fmtCount(e, 0); }
+    });
     const m = mods[s.id]; if (m && m.step) m.step(step, entering);
   }
   function go(i, toEnd) {
     const pm = mods[slides[cur].id]; if (pm && pm.leave && i !== cur) pm.leave();
+    if (i !== cur) slides[cur].querySelectorAll("[data-count]").forEach((e) => (e.dataset.done = ""));
     cur = Math.max(0, Math.min(slides.length - 1, i));
     const s = slides[cur];
     step = toEnd ? nSteps(s) - 1 : 0;

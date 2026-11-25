@@ -1,0 +1,24 @@
+﻿id,kind,gt,image,group,tesseract_pred,tesseract_cer,tesseract_wer,tesseract_seconds,trocr_pred,trocr_cer,trocr_wer,distort,level,index
+s01,영수증 합계,TOTAL 12.50,assets/s01.png,samples,TOTAL 12.50,0.0,0.0,0.1504,,,,,,
+s02,잡음 영수증,CASH CHANGE 7.50,assets/s02.png,samples,CASH CHANGE 7.50,0.0,0.0,0.1249,,,,"('noise', 25)",,
+s03,기울어진 청구서,Invoice No. 4821,assets/s03.png,samples,invoice No. 4821,0.0625,0.3333333333333333,0.1468,,,,"('rotate', 7)",,
+s04,흐릿한 문장,Reading text from pixels,assets/s04.png,samples,Reading text from pixels,0.0,0.0,0.1426,,,,"('blur', 2.2)",,
+s05,잡음 안내문,PLEASE KEEP YOUR RECEIPT,assets/s05.png,samples,PLEASE KEEP YOUR RECEIPT,0.0,0.0,0.1269,,,,"('noise', 45)",,
+s06,회전 상품 번호,ORDER 2026-11-25,assets/s06.png,samples,over sero?,0.9375,1.0,0.1131,,,,"('rotate', 15)",,
+s07,흐릿한 혼합문,The Quick Brown Fox,assets/s07.png,samples,The Quick Brown Fox,0.0,0.0,0.0967,,,,"('blur', 3.2)",,
+s08,강한 잡음,DATA MATRIX 3.14,assets/s08.png,samples,,1.0,1.0,0.0983,,,,"('noise', 60)",,
+,blur,TOTAL 12.50,assets/degrade_blur_0.png,degrade,TOTAL 12.50,0.0,0.0,0.0873,,,,,0,0
+,blur,TOTAL 12.50,assets/degrade_blur_1.png,degrade,TOTAL 12.50,0.0,0.0,0.0905,,,,,1,1
+,blur,TOTAL 12.50,assets/degrade_blur_2.png,degrade,TOTAL 12.50,0.0,0.0,0.0917,,,,,2,2
+,blur,TOTAL 12.50,assets/degrade_blur_3.png,degrade,TOTAL 12.50,0.0,0.0,0.1591,,,,,3,3
+,blur,TOTAL 12.50,assets/degrade_blur_4.png,degrade,TOTAL 12.50,0.0,0.0,0.1048,,,,,4,4
+,rotate,TOTAL 12.50,assets/degrade_rotate_0.png,degrade,TOTAL 12.50,0.0,0.0,0.0918,,,,,0,0
+,rotate,TOTAL 12.50,assets/degrade_rotate_1.png,degrade,TOTAL 12 .50,0.09090909090909091,1.0,0.1015,,,,,5,1
+,rotate,TOTAL 12.50,assets/degrade_rotate_2.png,degrade,TOTAL 12.50,0.0,0.0,0.1098,,,,,10,2
+,rotate,TOTAL 12.50,assets/degrade_rotate_3.png,degrade,ott 3? as,0.9090909090909091,1.5,0.0943,,,,,15,3
+,rotate,TOTAL 12.50,assets/degrade_rotate_4.png,degrade,or 28,0.8181818181818182,1.0,0.0965,,,,,20,4
+,noise,TOTAL 12.50,assets/degrade_noise_0.png,degrade,TOTAL 12.50,0.0,0.0,0.0867,,,,,0,0
+,noise,TOTAL 12.50,assets/degrade_noise_1.png,degrade,TOTAL 12.50,0.0,0.0,0.1039,,,,,15,1
+,noise,TOTAL 12.50,assets/degrade_noise_2.png,degrade,TOTAL 12.50,0.0,0.0,0.1059,,,,,30,2
+,noise,TOTAL 12.50,assets/degrade_noise_3.png,degrade,TOTAL 12.50,0.0,0.0,0.1077,,,,,45,3
+,noise,TOTAL 12.50,assets/degrade_noise_4.png,degrade,,1.0,1.0,0.0926,,,,,60,4

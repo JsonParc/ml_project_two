@@ -25,13 +25,21 @@ Li et al., "TrOCR: Transformer-Based Optical Character Recognition with Pre-trai
 
 8·9·13번의 확률, 토큰 분할, Attention 연결선은 설명용 개념도이고 화면에 그렇게 표시한다.
 
-## 자체 실험 결과 넣기
+## 자체 실험 (18·19번 슬라이드)
 
-`site/index.html` 위쪽의 `window.EXP` 객체만 고친다.
+`experiment/` 폴더. 합성 인쇄체 한 줄 이미지 8장 + `TOTAL 12.50`에 흐림·회전·잡음을 5단계씩 넣은 15장, 두 모델에 같은 PNG 입력.
 
-- `samples`: 이미지별 정답(`gt`), Tesseract 결과(`tess`), TrOCR 결과(`trocr`). `null`은 미측정, `""`는 아무것도 읽지 못함(CER 100%). CER/WER은 자동 계산
-- `degrade`: 흐림·회전·잡음 단계별 인식 결과
-- 실험 이미지는 `site/img/s01.png`…`s08.png`, `site/img/degrade_{blur,rotate,noise}_{0..4}.png`. 파일이 없으면 같은 조건을 브라우저에서 그린 이미지로 대신 보여준다
+| 모델 | 8장 CER | 8장 WER | 대소문자 무시 CER | 품질 변화 15장 CER |
+|---|---:|---:|---:|---:|
+| Tesseract 5.5.0 (--psm 7) | 22.5% | 24.0% | 19.7% | 18.8% |
+| TrOCR (trocr-small-printed, 탐욕적 디코딩) | 27.5% | 40.0% | 0.0% | 0.0% |
+
+TrOCR 오류는 모두 대소문자 (모든 출력이 대문자). 표본이 작고 품질 변화 15장은 같은 문장의 변형이라 일반적인 성능 비교 근거로 쓰지 않는다.
+
+- `assets/`: 실험 이미지 23장 (발표 사이트에는 `site/img/`로 복사)
+- `run_ocr_experiment.py`: 이미지 생성 + Tesseract 측정 (Colab/리눅스용)
+- `run_trocr_local.py`: 같은 이미지로 TrOCR 측정 → `results/results_with_trocr.json`. transformers 4.x 필요 (5.x는 이 모델 토크나이저를 읽지 못함). Windows에서 사용자 경로에 한글이 있으면 모델 폴더를 영문 경로에 복사해 그 경로를 인자로 넘김
+- 슬라이드 숫자는 `site/index.html` 위쪽 `window.EXP`에 있고, CER/WER은 페이지에서 정답·예측 문자열로 다시 계산
 
 ## 대본 고치기
 

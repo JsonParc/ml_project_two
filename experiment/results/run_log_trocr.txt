@@ -1,0 +1,50 @@
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+assets/s01.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/s02.png	gt='CASH CHANGE 7.50'	tesseract='CASH CHANGE 7.50'	trocr='CASH CHANGE 7.50'	CER=0.0%
+assets/s03.png	gt='Invoice No. 4821'	tesseract='invoice No. 4821'	trocr='INVOICE NO. 4821'	CER=43.8%
+assets/s04.png	gt='Reading text from pixels'	tesseract='Reading text from pixels'	trocr='READING TEXT FROM PIXELS'	CER=83.3%
+assets/s05.png	gt='PLEASE KEEP YOUR RECEIPT'	tesseract='PLEASE KEEP YOUR RECEIPT'	trocr='PLEASE KEEP YOUR RECEIPT'	CER=0.0%
+assets/s06.png	gt='ORDER 2026-11-25'	tesseract='over sero?'	trocr='ORDER 2026-11-25'	CER=0.0%
+assets/s07.png	gt='The Quick Brown Fox'	tesseract='The Quick Brown Fox'	trocr='THE QUICK BROWN FOX'	CER=63.2%
+assets/s08.png	gt='DATA MATRIX 3.14'	tesseract=''	trocr='DATA MATRIX 3.14'	CER=0.0%
+assets/degrade_blur_0.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_blur_1.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_blur_2.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_blur_3.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_blur_4.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_rotate_0.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_rotate_1.png	gt='TOTAL 12.50'	tesseract='TOTAL 12 .50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_rotate_2.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_rotate_3.png	gt='TOTAL 12.50'	tesseract='ott 3? as'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_rotate_4.png	gt='TOTAL 12.50'	tesseract='or 28'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_noise_0.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_noise_1.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_noise_2.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_noise_3.png	gt='TOTAL 12.50'	tesseract='TOTAL 12.50'	trocr='TOTAL 12.50'	CER=0.0%
+assets/degrade_noise_4.png	gt='TOTAL 12.50'	tesseract=''	trocr='TOTAL 12.50'	CER=0.0%
+{
+  "samples": {
+    "tesseract": {
+      "n": 8,
+      "cer": 0.22535211267605634,
+      "wer": 0.24
+    },
+    "trocr": {
+      "n": 8,
+      "cer": 0.2746478873239437,
+      "wer": 0.4
+    }
+  },
+  "degrade": {
+    "tesseract": {
+      "n": 15,
+      "cer": 0.18787878787878787,
+      "wer": 0.3
+    },
+    "trocr": {
+      "n": 15,
+      "cer": 0.0,
+      "wer": 0.0
+    }
+  }
+}
