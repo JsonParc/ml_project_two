@@ -3,7 +3,7 @@
 머신러닝 수업 논문 발표 자료.
 Li et al., "TrOCR: Transformer-Based Optical Character Recognition with Pre-trained Models", *AAAI* 2023 · 공식 코드 [microsoft/unilm/trocr](https://github.com/microsoft/unilm/tree/master/trocr) · 공개 모델 [microsoft/trocr-small-printed](https://huggingface.co/microsoft/trocr-small-printed)
 
-- **발표 사이트**: `site/index.html` (파일 하나, 본편 21장 + 부록 2장. → 키를 누를 때마다 장 안의 단계가 하나씩 나오고 마지막 단계 뒤에 다음 장으로, T 키로 밝게/어둡게, F 키로 전체 화면, 오른쪽 아래 "대본 N번"은 대본 사이트의 같은 구간으로 이동)
+- **발표 사이트**: `site/index.html` (파일 하나, 본편 21장 + 부록 2장. → 키를 누를 때마다 장 안의 단계가 하나씩 나오고 마지막 단계 뒤에 다음 장으로, 마우스 휠 아래/위로도 다음/이전 단계, T 키로 밝게/어둡게, F 키로 전체 화면, 오른쪽 아래 "대본 N번"은 대본 사이트의 같은 구간으로 이동)
 - **발표 대본**: docs/발표대본.txt (슬라이드별 대본, 논문 실험 상세, 예상 질문)
 - **용어 정리**: docs/용어정리.txt
 - **대본 사이트**: `python scripts/build_script_site.py` → `script_site/index.html` (별도 저장소 [JsonParc/ml_scrpit_two](https://github.com/JsonParc/ml_scrpit_two)로 올림)

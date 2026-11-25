@@ -1406,6 +1406,20 @@ window.EXP = {
   let tx0 = null;
   deck.addEventListener("touchstart", (e) => { tx0 = e.touches[0].clientX; }, { passive: true });
   deck.addEventListener("touchend", (e) => { if (tx0 == null) return; const dx = e.changedTouches[0].clientX - tx0; if (Math.abs(dx) > 60) (dx < 0 ? next : prev)(); tx0 = null; });
+  // 마우스 휠: 아래로 = 다음 단계, 위로 = 이전 단계. 트랙패드처럼 잘게 여러 번 오는 이벤트는 모아서 한 번만, 넘긴 뒤 잠시 잠금
+  let wheelAcc = 0, wheelLock = 0, wheelLast = 0;
+  window.addEventListener("wheel", (e) => {
+    if (e.ctrlKey) return;                       // Ctrl + 휠(확대/축소)은 그대로 둔다
+    e.preventDefault();
+    const now = performance.now();
+    if (now - wheelLast > 250) wheelAcc = 0;     // 잠깐 멈췄다 다시 굴리면 새로 셈
+    wheelLast = now;
+    if (now < wheelLock) return;
+    wheelAcc += Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if (Math.abs(wheelAcc) < 40) return;
+    (wheelAcc > 0 ? next : prev)();
+    wheelAcc = 0; wheelLock = now + 450;
+  }, { passive: false });
   window.addEventListener("resize", fit);
   window.addEventListener("hashchange", () => { const m = location.hash.match(/^#s(\d+)$/); if (m && +m[1] - 1 !== cur) go(+m[1] - 1); });
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", rebuildThemed);
