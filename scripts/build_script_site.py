@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_TXT = ROOT / "docs" / "발표대본.txt"
 GLOSS_TXT = ROOT / "docs" / "용어정리.txt"
 OUT = ROOT / "script_site" / "index.html"   # 별도 저장소(JsonParc/ml_scrpit_two)로 올리는 폴더
-SLIDES_URL = "https://two025240014-jimin-trocr.onrender.com/"  # 배포된 발표 사이트 (Render 주소가 다르면 여기만 고친다)
+SLIDES_URL = "https://ml-project-two.onrender.com/"  # 배포된 발표 사이트 (Render 주소가 다르면 여기만 고친다)
 
 # 너무 흔해서 각주를 달면 오히려 방해되는 단어
 SKIP_KEYS = {"토큰"}

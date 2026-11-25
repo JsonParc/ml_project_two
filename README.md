@@ -58,6 +58,10 @@ cd script_site && git add -A && git commit -m "대본 수정" && git push
 
 Blueprint로 만들 때는 `render.yaml`에 같은 설정이 들어 있다. 공개되는 것은 `site/` 폴더뿐이다. `site/index.html`은 파일을 더블클릭해도 열린다(인터넷이 없으면 글꼴만 기본 글꼴로 바뀜).
 
-배포 주소가 정해지면 두 곳을 맞춘다.
+배포 주소: 발표 https://ml-project-two.onrender.com/ · 대본 https://ml-scrpit-two.onrender.com/
+
+Publish Directory를 `.`(저장소 최상위)로 두어도 최상위 `index.html`이 `site/`로 넘겨 주므로 열린다. 이때는 docs/, experiment/ 등도 공개된다.
+
+배포 주소가 바뀌면 두 곳을 맞춘다.
 - `site/index.html`의 `SCRIPT_URL` (대본 사이트 주소)
 - `scripts/build_script_site.py`의 `SLIDES_URL` (발표 사이트 주소)
