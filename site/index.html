@@ -204,7 +204,7 @@ figcaption { font-size: 20px; color: var(--mid); }
 .reasons p { font-size: 23px; line-height: 1.5; color: var(--sub); margin-top: 2px; }
 
 /* 11 학습 파이프라인 */
-.pipe { position: relative; height: 690px; }
+.pipe { position: relative; height: 700px; }
 .pipe svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .pipe path { fill: none; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
 .pipe path.k { stroke: var(--mid); marker-end: url(#ah-k); }
@@ -219,7 +219,7 @@ figcaption { font-size: 20px; color: var(--mid); }
 .pn.hl i { background: var(--hl); color: #2E2E2E; }
 .rowl { position: absolute; left: 0; font-size: 22px; font-weight: 800; color: var(--mid); }
 .loop-l { position: absolute; width: 640px; margin-left: -320px; text-align: center; font-size: 22px; font-weight: 800; color: var(--bad); white-space: nowrap; background: var(--paper); padding: 0 12px; }
-.settings { position: absolute; left: 0; right: 0; top: 600px; display: grid; grid-template-columns: repeat(6, auto); gap: 18px 34px; padding: 22px 30px; background: var(--tint); border-radius: 20px; margin: 0; }
+.settings { position: absolute; left: 0; right: 0; top: 622px; display: grid; grid-template-columns: repeat(6, auto); gap: 12px 34px; padding: 14px 30px; background: var(--tint); border-radius: 20px; margin: 0; }
 .settings dt { font-size: 18px; color: var(--mid); font-weight: 700; }
 .settings dd { margin: 0; font-size: 25px; font-weight: 800; }
 
@@ -501,7 +501,7 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
       </defs>
       <g data-at="0"><path class="draw k" pathLength="1" d="M260,34 H580"/><path class="draw k" pathLength="1" d="M680,34 H1000" style="--delay:.3s"/><path class="draw k" pathLength="1" d="M1100,34 H1420" style="--delay:.6s"/></g>
       <g data-at="1"><path class="draw k" pathLength="1" d="M260,324 H580"/><path class="draw k" pathLength="1" d="M680,324 H1000" style="--delay:.3s"/><path class="draw k" pathLength="1" d="M1100,324 H1420" style="--delay:.6s"/></g>
-      <g data-at="2"><path class="loop" d="M1470,520 C1470,585 210,585 210,525"/></g>
+      <g data-at="2"><path class="loop" d="M1470,530 V566 Q1470,586 1450,586 H230 Q210,586 210,566 V536"/></g>
     </svg>
     <div class="pn" data-at="0" style="left:210px;top:0"><i>1</i><b>초기화</b><p>인코더 ← BEiT·DeiT<br>디코더 ← RoBERTa·MiniLM</p></div>
     <div class="pn" data-at="0" style="left:630px;top:0"><i>2</i><b>1단계 사전학습</b><p>인쇄체 텍스트 줄 6.84억 개</p></div>
@@ -512,7 +512,7 @@ ul.dots { padding-left: 1.1em; display: grid; gap: 12px; }
     <div class="pn" data-at="1" style="left:630px;top:290px"><i>6</i><b>순전파</b><p>이미지 → 인코더 → 디코더 (정답을 한 칸 민 입력) → 토큰별 확률</p></div>
     <div class="pn" data-at="1" style="left:1050px;top:290px"><i>7</i><b>손실</b><p>정답 토큰의 교차 엔트로피</p></div>
     <div class="pn back" data-at="1" style="left:1470px;top:290px"><i>8</i><b>역전파·갱신</b><p>기울기 계산 후 인코더·디코더 파라미터 함께 갱신</p></div>
-    <p class="loop-l" data-at="2" style="left:840px;top:548px">파라미터 갱신 후 다음 배치로 반복</p>
+    <p class="loop-l" data-at="2" style="left:840px;top:569px">파라미터 갱신 후 다음 배치로 반복 (8 → 5)</p>
     <dl class="settings" data-at="3">
       <div><dt>입력</dt><dd>384 × 384</dd></div><div><dt>배치</dt><dd><span data-count="2048">2,048</span></dd></div><div><dt>학습률</dt><dd>5e-5</dd></div>
       <div><dt>손실</dt><dd>교차 엔트로피</dd></div><div><dt>추론</dt><dd>빔 서치 (빔 10)</dd></div><div><dt>사전학습 장비</dt><dd>V100 <span data-count="32">32</span>장</dd></div>
