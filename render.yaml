@@ -1,0 +1,8 @@
+# Render Blueprint: 발표 사이트(site/)만 정적 사이트로 배포한다. 빌드 없음.
+services:
+  - type: web
+    name: two025240014-jimin-trocr
+    runtime: static
+    rootDir: site
+    buildCommand: echo "no build"
+    staticPublishPath: .

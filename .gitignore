@@ -1,0 +1,7 @@
+# 대본 사이트는 별도 저장소(JsonParc/ml_scrpit_two)로 관리
+/script_site/
+# claude.ai 아티팩트 게시용 사본 (site/index.html에서 문서 틀만 뺀 것)
+/artifact.html
+__pycache__/
+*.pyc
+.venv/
